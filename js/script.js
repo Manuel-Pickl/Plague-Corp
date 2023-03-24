@@ -1,9 +1,18 @@
+/*
+
+REFACTORING
+TYPESCRIPT
+
+*/
+
+const framerate = 3;
+
 const virusWidth = 10;
 const virusHeight = virusWidth;
 
-const minPopulation = 1;
-const overPopulation = 10;
-const spawnProbability = 0.01;
+const minPopulation = 2;
+const overPopulation = 4;
+const spawnProbability = 0.05;
 
 // debug
 const logCyclus = false;
@@ -81,7 +90,7 @@ function getCountry(x, y) {
 function load() {
   initialize();
   setVirus();
-  const interval = setInterval(draw, 1000);
+  const interval = setInterval(draw, 1000 / framerate);
 }
 
 function initialize() {
@@ -104,6 +113,7 @@ function initialize() {
       var virus = document.createElement("div");
       virus.id = `${column}-${row}`;
       virus.classList.add("virus");
+      virus.classList.add((Math.random() < 0.5) ? "alpha" : "beta");
       let positionX = column * virusWidth;
       if (row % 2 == 1) positionX += virusWidth / 2;
       let positionY = row * virusHeight * 0.75;

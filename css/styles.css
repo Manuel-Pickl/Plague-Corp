@@ -25,8 +25,6 @@ svg {
 
 .virus {
     position: absolute;
-
-    background-color: salmon;
     visibility: hidden;
 
     --gap: 8%;
@@ -39,4 +37,13 @@ svg {
         50% calc(0% + var(--gap))
     );
     /* clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%); */
+}
+
+.alpha {
+    background-color: salmon;
+}
+
+
+.beta {
+    background-color: salmon;
 }
