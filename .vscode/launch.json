@@ -10,6 +10,7 @@
             "name": "Launch Chrome against localhost",
             "url": "http://127.0.0.1:5500/index.html",
             "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "tsc: build - tsconfig.json",
             // "preLaunchTask": "tsc build"
         }
     ]
