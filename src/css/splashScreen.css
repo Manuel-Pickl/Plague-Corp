@@ -11,8 +11,8 @@
     top: 50%;
     translate: -50% -50%;
 
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
+    border: 8px solid lightgray;
+    border-top: 8px solid cornflowerblue;
     color: white;
     border-radius: 50%;
     width: 40px;
