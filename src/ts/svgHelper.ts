@@ -1,7 +1,8 @@
 var svgObject: any = document.getElementById("svgObject");
 svgObject?.addEventListener("load",function() {
   assignHtmlVariables();
-  load();
+  initializeSimulation();
+  startSimluation();
 }, false);
 
 function determineSvgSize() {
@@ -28,6 +29,8 @@ function determineSvgSize() {
     svgObject.style.height = `${height}px`;
     virusMap.style.width = `${calcWidth}px`;
     virusMap.style.height = `${calcHeight}px`;
+
+    console.log("svg size determined");
 }
 
   

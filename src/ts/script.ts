@@ -24,26 +24,31 @@ function pointInSea(column: number, row: number) {
 }
 
 
-function load() {
-  let splashScreen = document.querySelector(".splash-screen") as HTMLElement;
-
+function initializeSimulation() {
   determineSvgSize();
   createMatrices();
   placeVirusRandomly();
+  
+  if (debugMode) console.log("simulation initialized");
+}
 
+function startSimluation() {
   const interval = setInterval(draw, 1000 / framerate);
-  console.log("loaded");
-
+  
+  let splashScreen = document.querySelector(".splash-screen") as HTMLElement;
+  
   svgObject.style.visibility = "visible";
   virusMap.style.visibility = "visible";
   splashScreen.style.visibility = "hidden";
+
+  if (debugMode) console.log("simulation started");
 }
-
-
 
 function createMatrices()  {
   createSeaMatrix();
   createVirusMatrix()
+
+  if (debugMode) console.log("game matrices created");
 }
 
 function createSeaMatrix() {
@@ -81,11 +86,17 @@ function createVirusMatrix() {
   virusMatrix = new Array(virusColumns);
   for (let column = 0; column < virusColumns; column++) {
     virusMatrix[column] = new Array(virusRows);
+    for (let row = 0; row < virusRows; row++) {
+      virusMatrix[column][row] = 0;
+    }
   }
   
   virusMatrixNextStep = new Array(virusColumns);
   for (let column = 0; column < virusColumns; column++) {
     virusMatrixNextStep[column] = new Array(virusRows);
+    for (let row = 0; row < virusRows; row++) {
+      virusMatrixNextStep[column][row] = 0;
+    }
   }
 
   // create all virus div elements
@@ -136,6 +147,7 @@ function draw() {
   }
   
   generate();
+
   if (logCyclus) console.log("==========");
 }
 
@@ -156,11 +168,12 @@ function placeVirusRandomly() {
       }
 
       virusMatrix[column][row] = randomNumber;
-      virusMatrixNextStep[column][row] = 0;
 
       all++;
     }
   }
+
+  console.log("start point set for virus");
 }
 
 function generate() {
