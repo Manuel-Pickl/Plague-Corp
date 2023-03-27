@@ -1,5 +1,5 @@
 var framerate = 5;
-var virusWidth = 10;
+var virusWidth = 5;
 var virusHeight = virusWidth;
 var minPopulation = 1;
 var overPopulation = 3;
