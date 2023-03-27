@@ -1,4 +1,3 @@
-// var worldSvg: SVGElement;
 var worldSvg;
 var virusMap: HTMLDivElement;
 
