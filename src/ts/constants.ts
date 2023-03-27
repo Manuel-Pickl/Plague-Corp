@@ -1,13 +1,16 @@
-const framerate = 5;
+const framerate: number = 15;
 
-const virusWidth = 8;
-const virusHeight = virusWidth;
+const virusWidth: number = 8;
+const virusHeight: number = virusWidth;
+// const brushSize: number = 1;
 
-const minPopulation = 1;
-const overPopulation = 10;
+const minPopulation: number = 1;
+const overPopulation: number = 10;
 const spawnProbability = 0.001;
 
+
+
 // debug
-const debugMode = true;
-const logCyclus = false;
-const seaClickTest = true;
+const debugMode: boolean = true;
+const logCyclus: boolean = false;
+const seaClickTest: boolean = true;

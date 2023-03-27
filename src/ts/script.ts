@@ -8,9 +8,6 @@ var virusMatrix: Array<Array<number>>;
 var virusMatrixNextStep: Array<Array<number>>;
 var seaMatrix: Array<Array<number>>;
 
-// window.addEventListener('load', load);
-
-
 
 
 function assignHtmlVariables() {
@@ -19,7 +16,6 @@ function assignHtmlVariables() {
 }
 
 function pointInSea(column: number, row: number) {
-  // return false;
   return !seaMatrix[column][row];
 }
 
@@ -27,7 +23,7 @@ function pointInSea(column: number, row: number) {
 function initializeSimulation() {
   determineSvgSize();
   createMatrices();
-  placeVirusRandomly();
+  // placeVirusRandomly();
   
   if (debugMode) console.log("simulation initialized");
 }
@@ -35,11 +31,9 @@ function initializeSimulation() {
 function startSimluation() {
   const interval = setInterval(draw, 1000 / framerate);
   
-  let splashScreen = document.querySelector(".splash-screen") as HTMLElement;
-  
-  svgObject.style.visibility = "visible";
-  virusMap.style.visibility = "visible";
-  splashScreen.style.visibility = "hidden";
+  (<HTMLElement>document.querySelector(".splash-screen")).style.visibility = "hidden";
+
+  enableVirusPlacement();
 
   if (debugMode) console.log("simulation started");
 }
@@ -52,7 +46,6 @@ function createMatrices()  {
 }
 
 function createSeaMatrix() {
-  // seaMatrix = JSON.parse(matrix);
   seaMatrix = new Array(virusColumns);
   for (let column = 0; column < virusColumns; column++) {
     seaMatrix[column] = new Array(virusRows);
@@ -114,7 +107,7 @@ function createVirusMatrix() {
       virus.style.top = `${positionY}px`;
       virus.style.width =`${virusWidth}px`;
       virus.style.height = `${virusHeight}px`;
-      virus.style.opacity = 0.5.toString();
+      virus.style.opacity = "0";
       // virus.style.visibility = "hidden";
 
       virusMap.appendChild(virus);
@@ -131,16 +124,13 @@ function draw() {
     
   for ( let row = 0; row < virusRows; row++) {
     for ( let column = 0; column < virusColumns; column++) {
-      let currentVirus = document.getElementById(`${column}-${row}`) as HTMLDivElement;
+      let currentVirus = document.getElementById(`${column}-${row}`);
 
       if (virusMatrix[column][row] == 1) {
-
-        if (currentVirus.style.visibility != "visible") {
-          currentVirus.style.visibility = "visible";
-        }
+        currentVirus.style.opacity = "0.5";
       }
       else if (virusMatrix[column][row] == 0) {
-        currentVirus.style.visibility = "hidden";
+        currentVirus.style.opacity = "0";
       }
       else console.log("should never happen: ", virusMatrix[column][row]);
     }
@@ -187,39 +177,7 @@ function generate() {
         continue;
       }
 
-      // algorith for hexagon
-      // Add up all the states in a 2,3,2 surrounding hexagon
-      let neighbors = 0;
-      
-      if      ((row % 2 == 0) && (column > 0) && (row > 0))             neighbors += virusMatrix[column - 1][row - 1];
-      else if ((column < virusColumns - 1) && (row > 0))                neighbors += virusMatrix[column + 1][row - 1];
-      if      (row > 0)                                                 neighbors += virusMatrix[column][row - 1];
-
-      if      (column > 0)                                              neighbors += virusMatrix[column - 1][row];
-      if      (column < virusColumns - 1)                               neighbors += virusMatrix[column + 1][row];
-
-      if      (row < virusRows - 1)                                     neighbors += virusMatrix[column][row + 1];
-      if      ((row % 2 == 0) && (column > 0) && (row < virusRows - 1)) neighbors += virusMatrix[column - 1][row + 1];
-      else if ((column < virusColumns - 1) && (row < virusRows - 1))    neighbors += virusMatrix[column + 1][row + 1];
-
-
-      // check if bound tiles are skips
-      // if (row % 2 == 0) neighbors += virusMatrix[column - 1][row - 1];
-      // else              neighbors += virusMatrix[column + 1][row - 1];
-      //                   neighbors += virusMatrix[column][row - 1];
-
-      //                   neighbors += virusMatrix[column - 1][row];
-      //                   neighbors += virusMatrix[column + 1][row];
-
-      //                   neighbors += virusMatrix[column][row + 1];
-      // if (row % 2 == 0) neighbors += virusMatrix[column - 1][row + 1];
-      // else              neighbors += virusMatrix[column + 1][row + 1];
-
-      // Rules of Life
-      if      (neighbors < minPopulation)   virusMatrixNextStep[column][row] = 0; // Loneliness
-      else if (neighbors > overPopulation)  virusMatrixNextStep[column][row] = 0; // Overpopulation
-      else if (neighbors >= minPopulation)  virusMatrixNextStep[column][row] = 1; // Reproduction      
-      else console.log("SHOULD NEVER HAPPEN!");
+      gameOfLife(column, row)   
 
       if (virusMatrixNextStep[column][row] == 1) current++;
       all++;
@@ -232,4 +190,31 @@ function generate() {
   virusMatrix = virusMatrixNextStep.map(function(arr) {
     return arr.slice();
   });
+}
+
+var mouseIsDown: boolean = false;
+function enableVirusPlacement() {
+  document.onmousedown = (e) => { 
+    mouseIsDown = true;
+    placeVirus(e);
+  };
+  document.onmouseup = () => mouseIsDown = false;
+
+  document.querySelectorAll(".virus").forEach(virus => (<HTMLElement>virus).onmouseover = placeVirus);
+}
+
+function placeVirus(e: MouseEvent) {
+  if (!mouseIsDown) return;
+
+  let virus = <HTMLElement>e.target;
+  if (!virus.classList.contains("virus")) return;
+
+  let column = parseInt(virus.id.split("-")[0]);
+  let row = parseInt(virus.id.split("-")[1]);
+  if (pointInSea(column, row)) return;
+
+  virusMatrix[column][row] = 1;
+
+  // we can already make the tile visible, but it's functionality/spreading only starts on next frame
+  // virus.style.opacity = "0.5";
 }

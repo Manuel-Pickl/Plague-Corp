@@ -1,3 +1,11 @@
+* {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
 body {
     margin: 0;
     padding: 0;

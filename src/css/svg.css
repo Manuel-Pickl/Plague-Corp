@@ -5,8 +5,6 @@ object {
     width: 0;
     height: 0;
     translate: -50% -50%;
-    /* outline: solid 4px orange; */
-    visibility: hidden;
 }
 
 svg {

@@ -5,13 +5,10 @@
     width: 0;
     height: 0;
     translate: -50% -50%;
-    visibility: hidden;
-    /* outline: solid 2px mediumslateblue; */
 }
 
 .virus {
     position: absolute;
-    visibility: hidden;
 
     --gap: 8%;
     clip-path: polygon(
@@ -22,7 +19,6 @@
         calc(100% - var(--gap)) calc(25% + var(--gap)),
         50% calc(0% + var(--gap))
     );
-    /* clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%); */
 }
 
 .alpha {
