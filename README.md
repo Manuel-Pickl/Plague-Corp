@@ -2,7 +2,8 @@
 
 Ideas
 * specific virus start pattern instead of single tile
-** meaningful patterns
+  * meaningful patterns
+* different game map
 * country specific resistance
 * airplane lines for infecting islands with no intial virus
 * different virus variations
