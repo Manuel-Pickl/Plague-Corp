@@ -45,37 +45,50 @@ function createSeaMatrix() {
     seaMatrix[column] = new Array(virusRows);
   }
 
-  // Get references to all the <path> elements in the <svg>
-  const pathElements = d3
-    .select(worldSvg)
-    .selectAll<SVGPathElement, unknown>('path');
+  const virusSvg = d3
+    .create('svg')
+    .attr('width', virusWidth)
+    .attr('height', virusHeight)
+    .append('g');
 
-  // Cache the bounding boxes of the path elements in an array
-  const pathBBoxes = pathElements.nodes().map((path) => path.getBBox());
+  for (let row = 0; row < virusRows; row++) {
+    for (let column = 0; column < virusColumns; column++) {
+      const positionX =
+        column * virusWidth + (row % 2 == 1 ? virusWidth / 2 : 0);
+      const positionY = row * virusHeight * 0.75;
 
-  // Iterate over all the <path> elements
-  pathBBoxes.forEach((bbox, index) => {
-    // Iterate over all the <div> elements
-    d3.select(virusMap)
-      .selectAll('div')
-      .each(function () {
-        // Get the bounding rect of the <div> element
-        // @ts-ignore
-        const divRect = this?.getBoundingClientRect();
+      virusSvg
+        .append('circle')
+        .attr('cx', positionX + virusWidth / 2)
+        .attr('cy', positionY + virusHeight / 2)
+        .attr('r', virusWidth / 2)
+        .attr('fill', 'transparent')
+        .attr('pointer-events', 'visible');
 
-        // Check if the <div> element overlaps with the <path> element
-        const divOverPath =
-          divRect.left < bbox.x + bbox.width &&
-          divRect.left + divRect.width > bbox.x &&
-          divRect.top < bbox.y + bbox.height &&
-          divRect.top + divRect.height > bbox.y;
+      const pointOnLand =
+        worldSvg.contains(virusSvg.node()) ||
+        worldSvg.ownerDocument.elementFromPoint(
+          positionX + virusWidth / 2,
+          positionY
+        ) != worldSvg || // top
+        worldSvg.ownerDocument.elementFromPoint(
+          positionX + virusWidth,
+          positionY + virusHeight / 2
+        ) != worldSvg || // right
+        worldSvg.ownerDocument.elementFromPoint(
+          positionX + virusWidth / 2,
+          positionY + virusHeight
+        ) != worldSvg || // bottom
+        worldSvg.ownerDocument.elementFromPoint(
+          positionX,
+          positionY + virusHeight / 2
+        ) != worldSvg; // left
 
-        // Update the seaMatrix
-        // @ts-ignore
-        const [_, column, row] = this.id.split('-');
-        seaMatrix[+column][+row] = divOverPath ? 1 : 0;
-      });
-  });
+      seaMatrix[column][row] = pointOnLand ? 1 : 0;
+    }
+  }
+
+  virusSvg.remove();
 }
 
 function createVirusMatrix() {
