@@ -1,9 +1,5 @@
 var svgObject: any = document.getElementById("svgObject");
-svgObject?.addEventListener("load",function() {
-  assignHtmlVariables();
-  initializeSimulation();
-  startSimluation();
-}, false);
+svgObject?.addEventListener("load", onSvgLoad, false);
 
 function determineSvgSize() {
     // calculate best fit for svg
@@ -33,6 +29,35 @@ function determineSvgSize() {
     console.log("svg size determined");
 }
 
+function createSeaMatrix() {
+  seaMatrix = new Array(virusColumns);
+  for (let column = 0; column < virusColumns; column++) {
+    seaMatrix[column] = new Array(virusRows);
+  }
+
+
+  for (let row = 0; row < virusRows; row++) {
+    for (let column = 0; column < virusColumns; column++) {
+      let positionX = column * virusWidth;
+      if (row % 2 == 1) positionX += virusWidth / 2;
+      let positionY = row * virusHeight * 0.75;
+
+      let pointOnLand = (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvg)
+        // sides
+        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvg) // top
+        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvg) // right
+        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvg) // bottom
+        || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvg) // left
+        // edges
+        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY) != worldSvg) // top left
+        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY) != worldSvg) // top right
+        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight) != worldSvg) // bottom right
+        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight) != worldSvg) // bottom left
+
+      seaMatrix[column][row] = pointOnLand ? 1 : 0;
+    }
+  }
+}
   
 function getCountry(x, y) {
     // let path = worldSvg.ownerDocument.elementFromPoint(x, y);

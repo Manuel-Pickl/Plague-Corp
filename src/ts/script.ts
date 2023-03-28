@@ -10,6 +10,12 @@ var seaMatrix: Array<Array<number>>;
 
 
 
+function onSvgLoad() {
+  assignHtmlVariables();
+  initializeSimulation();
+  startSimluation();
+}
+
 function assignHtmlVariables() {
   worldSvg = svgObject.contentDocument.querySelector("svg");
   virusMap = document.getElementById("virusMap") as HTMLDivElement;
@@ -18,7 +24,6 @@ function assignHtmlVariables() {
 function pointInSea(column: number, row: number) {
   return !seaMatrix[column][row];
 }
-
 
 function initializeSimulation() {
   determineSvgSize();
@@ -43,36 +48,6 @@ function createMatrices()  {
   createVirusMatrix()
 
   if (debugMode) console.log("game matrices created");
-}
-
-function createSeaMatrix() {
-  seaMatrix = new Array(virusColumns);
-  for (let column = 0; column < virusColumns; column++) {
-    seaMatrix[column] = new Array(virusRows);
-  }
-
-
-  for (let row = 0; row < virusRows; row++) {
-    for (let column = 0; column < virusColumns; column++) {
-      let positionX = column * virusWidth;
-      if (row % 2 == 1) positionX += virusWidth / 2;
-      let positionY = row * virusHeight * 0.75;
-
-      let pointOnLand = (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvg)
-        // sides
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvg) // top
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvg) // right
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvg) // bottom
-        || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvg) // left
-        // edges
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY) != worldSvg) // top left
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY) != worldSvg) // top right
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight) != worldSvg) // bottom right
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight) != worldSvg) // bottom left
-
-      seaMatrix[column][row] = pointOnLand ? 1 : 0;
-    }
-  }
 }
 
 function createVirusMatrix() {
