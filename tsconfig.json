@@ -1,8 +1,10 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "outDir": "src/js/",
-      "sourceMap": true,
-    }
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "src/js/",
+    "sourceMap": true,
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2015", "dom"]
   }
+}

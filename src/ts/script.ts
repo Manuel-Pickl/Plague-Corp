@@ -1,4 +1,5 @@
 var worldSvg;
+var svgTest;
 var virusMap: HTMLDivElement;
 
 var virusColumns: number;
@@ -8,14 +9,9 @@ var virusMatrix: Array<Array<number>>;
 var virusMatrixNextStep: Array<Array<number>>;
 var seaMatrix: Array<Array<number>>;
 
-// window.addEventListener('load', load);
-
-
-
-
 function assignHtmlVariables() {
-  worldSvg = svgObject.contentDocument.querySelector("svg");
-  virusMap = document.getElementById("virusMap") as HTMLDivElement;
+  worldSvg = svgObject.contentDocument.querySelector('svg');
+  virusMap = document.getElementById('virusMap') as HTMLDivElement;
 }
 
 function pointInSea(column: number, row: number) {
@@ -23,58 +19,63 @@ function pointInSea(column: number, row: number) {
   return !seaMatrix[column][row];
 }
 
-
 function load() {
-  let splashScreen = document.querySelector(".splash-screen") as HTMLElement;
+  let splashScreen = document.querySelector('.splash-screen') as HTMLElement;
 
   determineSvgSize();
   createMatrices();
   placeVirusRandomly();
 
   const interval = setInterval(draw, 1000 / framerate);
-  console.log("loaded");
+  console.log('loaded');
 
-  svgObject.style.visibility = "visible";
-  virusMap.style.visibility = "visible";
-  splashScreen.style.visibility = "hidden";
+  svgObject.style.visibility = 'visible';
+  virusMap.style.visibility = 'visible';
+  splashScreen.style.visibility = 'hidden';
 }
 
-
-
-function createMatrices()  {
+function createMatrices() {
+  createVirusMatrix();
   createSeaMatrix();
-  createVirusMatrix()
 }
 
 function createSeaMatrix() {
-  // seaMatrix = JSON.parse(matrix);
   seaMatrix = new Array(virusColumns);
   for (let column = 0; column < virusColumns; column++) {
     seaMatrix[column] = new Array(virusRows);
   }
 
+  // Get references to all the <path> elements in the <svg>
+  const pathElements = d3
+    .select(worldSvg)
+    .selectAll<SVGPathElement, unknown>('path');
 
-  for (let row = 0; row < virusRows; row++) {
-    for (let column = 0; column < virusColumns; column++) {
-      let positionX = column * virusWidth;
-      if (row % 2 == 1) positionX += virusWidth / 2;
-      let positionY = row * virusHeight * 0.75;
+  // Cache the bounding boxes of the path elements in an array
+  const pathBBoxes = pathElements.nodes().map((path) => path.getBBox());
 
-      let pointOnLand = (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvg)
-        // sides
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvg) // top
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvg) // right
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvg) // bottom
-        || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvg) // left
-        // edges
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY) != worldSvg) // top left
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY) != worldSvg) // top right
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight) != worldSvg) // bottom right
-        // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight) != worldSvg) // bottom left
+  // Iterate over all the <path> elements
+  pathBBoxes.forEach((bbox, index) => {
+    // Iterate over all the <div> elements
+    d3.select(virusMap)
+      .selectAll('div')
+      .each(function () {
+        // Get the bounding rect of the <div> element
+        // @ts-ignore
+        const divRect = this?.getBoundingClientRect();
 
-      seaMatrix[column][row] = pointOnLand ? 1 : 0;
-    }
-  }
+        // Check if the <div> element overlaps with the <path> element
+        const divOverPath =
+          divRect.left < bbox.x + bbox.width &&
+          divRect.left + divRect.width > bbox.x &&
+          divRect.top < bbox.y + bbox.height &&
+          divRect.top + divRect.height > bbox.y;
+
+        // Update the seaMatrix
+        // @ts-ignore
+        const [_, column, row] = this.id.split('-');
+        seaMatrix[+column][+row] = divOverPath ? 1 : 0;
+      });
+  });
 }
 
 function createVirusMatrix() {
@@ -82,75 +83,71 @@ function createVirusMatrix() {
   for (let column = 0; column < virusColumns; column++) {
     virusMatrix[column] = new Array(virusRows);
   }
-  
+
   virusMatrixNextStep = new Array(virusColumns);
   for (let column = 0; column < virusColumns; column++) {
     virusMatrixNextStep[column] = new Array(virusRows);
   }
 
+  let all = '';
   // create all virus div elements
   for (let row = 0; row < virusRows; row++) {
     for (let column = 0; column < virusColumns; column++) {
+      // calc pos
+      let x = column * virusWidth;
+      if (row % 2 == 1) x += virusWidth / 2;
+      let y = row * virusHeight * 0.75;
 
-      var virus = document.createElement("div");
-      virus.id = `${column}-${row}`;
-      virus.classList.add("virus");
-      virus.classList.add((Math.random() < 0.5) ? "alpha" : "beta");
-      let positionX = column * virusWidth;
-      if (row % 2 == 1) positionX += virusWidth / 2;
-      let positionY = row * virusHeight * 0.75;
-      virus.style.left = `${positionX}px`;
-      virus.style.top = `${positionY}px`;
-      virus.style.width =`${virusWidth}px`;
-      virus.style.height = `${virusHeight}px`;
-      virus.style.opacity = 0.5.toString();
-      // virus.style.visibility = "hidden";
-
-      virusMap.appendChild(virus);
+      // create div
+      all += `
+      <div 
+      id="virus-${column}-${row}"
+      class="virus ${Math.random() < 0.5 ? 'alpha' : 'beta'}" 
+      style="left:${x}px; top:${y}px; width:${virusWidth}px; height: ${virusHeight}px; opacity: 0.5; visibility: hidden;">
+      </div>
+      `;
     }
   }
+  virusMap.innerHTML = all;
 }
-
 
 var cycleCount = 0;
 function draw() {
   cycleCount++;
-  
-  if (logCyclus) console.log("Cycle: ", cycleCount);
-    
-  for ( let row = 0; row < virusRows; row++) {
-    for ( let column = 0; column < virusColumns; column++) {
-      let currentVirus = document.getElementById(`${column}-${row}`) as HTMLDivElement;
 
-      if (virusMatrix[column][row] == 1) {
+  if (logCyclus) console.log('Cycle: ', cycleCount);
 
-        if (currentVirus.style.visibility != "visible") {
-          currentVirus.style.visibility = "visible";
-        }
+  for (let row = 0; row < virusRows; row++) {
+    for (let column = 0; column < virusColumns; column++) {
+      let currentVirus = document.getElementById(
+        `virus-${column}-${row}`
+      ) as HTMLDivElement;
+      if (currentVirus) {
+        if (virusMatrix[column][row] == 1) {
+          if (currentVirus.style.visibility != 'visible') {
+            currentVirus.style.visibility = 'visible';
+          }
+        } else if (virusMatrix[column][row] == 0) {
+          currentVirus.style.visibility = 'hidden';
+        } else console.log('should never happen: ', virusMatrix[column][row]);
       }
-      else if (virusMatrix[column][row] == 0) {
-        currentVirus.style.visibility = "hidden";
-      }
-      else console.log("should never happen: ", virusMatrix[column][row]);
     }
   }
-  
-  generate();
-  if (logCyclus) console.log("==========");
-}
 
+  generate();
+  if (logCyclus) console.log('==========');
+}
 
 var all = 0;
 var current = 0;
 function placeVirusRandomly() {
-  for ( let row = 0; row < virusRows; row++) {
+  for (let row = 0; row < virusRows; row++) {
     for (let column = 0; column < virusColumns; column++) {
       let randomNumber = 0;
 
       if (pointInSea(column, row)) {
         randomNumber = 0;
-      }
-      else if (Math.random() <= spawnProbability) {
+      } else if (Math.random() <= spawnProbability) {
         randomNumber = 1;
         current++;
       }
@@ -177,18 +174,21 @@ function generate() {
       // algorith for hexagon
       // Add up all the states in a 2,3,2 surrounding hexagon
       let neighbors = 0;
-      
-      if      ((row % 2 == 0) && (column > 0) && (row > 0))             neighbors += virusMatrix[column - 1][row - 1];
-      else if ((column < virusColumns - 1) && (row > 0))                neighbors += virusMatrix[column + 1][row - 1];
-      if      (row > 0)                                                 neighbors += virusMatrix[column][row - 1];
 
-      if      (column > 0)                                              neighbors += virusMatrix[column - 1][row];
-      if      (column < virusColumns - 1)                               neighbors += virusMatrix[column + 1][row];
+      if (row % 2 == 0 && column > 0 && row > 0)
+        neighbors += virusMatrix[column - 1][row - 1];
+      else if (column < virusColumns - 1 && row > 0)
+        neighbors += virusMatrix[column + 1][row - 1];
+      if (row > 0) neighbors += virusMatrix[column][row - 1];
 
-      if      (row < virusRows - 1)                                     neighbors += virusMatrix[column][row + 1];
-      if      ((row % 2 == 0) && (column > 0) && (row < virusRows - 1)) neighbors += virusMatrix[column - 1][row + 1];
-      else if ((column < virusColumns - 1) && (row < virusRows - 1))    neighbors += virusMatrix[column + 1][row + 1];
+      if (column > 0) neighbors += virusMatrix[column - 1][row];
+      if (column < virusColumns - 1) neighbors += virusMatrix[column + 1][row];
 
+      if (row < virusRows - 1) neighbors += virusMatrix[column][row + 1];
+      if (row % 2 == 0 && column > 0 && row < virusRows - 1)
+        neighbors += virusMatrix[column - 1][row + 1];
+      else if (column < virusColumns - 1 && row < virusRows - 1)
+        neighbors += virusMatrix[column + 1][row + 1];
 
       // check if bound tiles are skips
       // if (row % 2 == 0) neighbors += virusMatrix[column - 1][row - 1];
@@ -203,20 +203,23 @@ function generate() {
       // else              neighbors += virusMatrix[column + 1][row + 1];
 
       // Rules of Life
-      if      (neighbors < minPopulation)   virusMatrixNextStep[column][row] = 0; // Loneliness
-      else if (neighbors > overPopulation)  virusMatrixNextStep[column][row] = 0; // Overpopulation
-      else if (neighbors >= minPopulation)  virusMatrixNextStep[column][row] = 1; // Reproduction      
-      else console.log("SHOULD NEVER HAPPEN!");
+      if (neighbors < minPopulation)
+        virusMatrixNextStep[column][row] = 0; // Loneliness
+      else if (neighbors > overPopulation)
+        virusMatrixNextStep[column][row] = 0; // Overpopulation
+      else if (neighbors >= minPopulation)
+        virusMatrixNextStep[column][row] = 1; // Reproduction
+      else console.log('SHOULD NEVER HAPPEN!');
 
       if (virusMatrixNextStep[column][row] == 1) current++;
       all++;
     }
   }
 
-  if (logCyclus) console.log("alive: ", current);
-  if (logCyclus) console.log("dead: ", all - current);
+  if (logCyclus) console.log('alive: ', current);
+  if (logCyclus) console.log('dead: ', all - current);
 
-  virusMatrix = virusMatrixNextStep.map(function(arr) {
+  virusMatrix = virusMatrixNextStep.map(function (arr) {
     return arr.slice();
   });
 }
