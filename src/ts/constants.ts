@@ -1,4 +1,5 @@
-const framerate: number = 15;
+const maxFramerate: number = 15;
+const maxHudFramerate: number = maxFramerate;
 
 const virusWidth: number = 8;
 const virusHeight: number = virusWidth;

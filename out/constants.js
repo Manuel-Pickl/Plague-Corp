@@ -1,4 +1,5 @@
-var framerate = 15;
+var maxFramerate = 15;
+var maxHudFramerate = maxFramerate;
 var virusWidth = 8;
 var virusHeight = virusWidth;
 // const brushSize: number = 1;

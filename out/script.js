@@ -1,18 +1,34 @@
-var worldSvg;
-var virusMap;
-var virusColumns;
-var virusRows;
+// html elements
+var worldSvgElement;
+var virusMapElement;
+var cycleCounterElement;
+var infectedCountElement;
+var healthyCountElement;
+// intervals 
+var simulationInterval;
+var hudInterval;
+// matrices
 var virusMatrix;
 var virusMatrixNextStep;
 var seaMatrix;
+var virusColumns;
+var virusRows;
+var mouseIsDown = false;
+// hud
+var cycleCount = 0;
+var possibleVirusCount = 0;
+var infectedCount = 0;
 function onSvgLoad() {
     assignHtmlVariables();
     initializeSimulation();
     startSimluation();
 }
 function assignHtmlVariables() {
-    worldSvg = svgObject.contentDocument.querySelector("svg");
-    virusMap = document.getElementById("virusMap");
+    worldSvgElement = svgObject.contentDocument.querySelector("svg");
+    virusMapElement = document.querySelector("#virusMap");
+    cycleCounterElement = document.querySelector(".cycleCounter span");
+    infectedCountElement = document.querySelector(".infectedCount span");
+    healthyCountElement = document.querySelector(".healthyCount span");
 }
 function pointInSea(column, row) {
     return !seaMatrix[column][row];
@@ -25,7 +41,8 @@ function initializeSimulation() {
         console.log("simulation initialized");
 }
 function startSimluation() {
-    var interval = setInterval(draw, 1000 / framerate);
+    simulationInterval = setInterval(draw, 1000 / maxFramerate);
+    hudInterval = setInterval(updateHud, 1000 / maxHudFramerate);
     document.querySelector(".splash-screen").style.visibility = "hidden";
     enableVirusPlacement();
     if (debugMode)
@@ -69,15 +86,12 @@ function createVirusMatrix() {
             virus.style.height = "".concat(virusHeight, "px");
             virus.style.opacity = "0";
             // virus.style.visibility = "hidden";
-            virusMap.appendChild(virus);
+            virusMapElement.appendChild(virus);
         }
     }
 }
-var cycleCount = 0;
 function draw() {
     cycleCount++;
-    if (logCyclus)
-        console.log("Cycle: ", cycleCount);
     for (var row = 0; row < virusRows; row++) {
         for (var column = 0; column < virusColumns; column++) {
             var currentVirus = document.getElementById("".concat(column, "-").concat(row));
@@ -95,8 +109,6 @@ function draw() {
     if (logCyclus)
         console.log("==========");
 }
-var all = 0;
-var current = 0;
 function placeVirusRandomly() {
     for (var row = 0; row < virusRows; row++) {
         for (var column = 0; column < virusColumns; column++) {
@@ -106,17 +118,17 @@ function placeVirusRandomly() {
             }
             else if (Math.random() <= spawnProbability) {
                 randomNumber = 1;
-                current++;
+                infectedCount++;
             }
             virusMatrix[column][row] = randomNumber;
-            all++;
+            possibleVirusCount++;
         }
     }
     console.log("start point set for virus");
 }
 function generate() {
-    current = 0;
-    all = 0;
+    infectedCount = 0;
+    possibleVirusCount = 0;
     // Loop through every spot in our 2D array and check spots neighbors
     for (var column = 0; column < virusColumns; column++) {
         for (var row = 0; row < virusRows; row++) {
@@ -126,19 +138,14 @@ function generate() {
             }
             gameOfLife(column, row);
             if (virusMatrixNextStep[column][row] == 1)
-                current++;
-            all++;
+                infectedCount++;
+            possibleVirusCount++;
         }
     }
-    if (logCyclus)
-        console.log("alive: ", current);
-    if (logCyclus)
-        console.log("dead: ", all - current);
     virusMatrix = virusMatrixNextStep.map(function (arr) {
         return arr.slice();
     });
 }
-var mouseIsDown = false;
 function enableVirusPlacement() {
     document.onmousedown = function (e) {
         mouseIsDown = true;
@@ -160,5 +167,10 @@ function placeVirus(e) {
     virusMatrix[column][row] = 1;
     // we can already make the tile visible, but it's functionality/spreading only starts on next frame
     // virus.style.opacity = "0.5";
+}
+function updateHud() {
+    cycleCounterElement.innerText = cycleCount.toString();
+    infectedCountElement.innerText = infectedCount.toString();
+    healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }
 //# sourceMappingURL=script.js.map

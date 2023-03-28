@@ -23,8 +23,8 @@ function determineSvgSize() {
     // set sizes
     svgObject.style.width = `${width}px`;
     svgObject.style.height = `${height}px`;
-    virusMap.style.width = `${calcWidth}px`;
-    virusMap.style.height = `${calcHeight}px`;
+    virusMapElement.style.width = `${calcWidth}px`;
+    virusMapElement.style.height = `${calcHeight}px`;
 
     console.log("svg size determined");
 }
@@ -42,12 +42,12 @@ function createSeaMatrix() {
       if (row % 2 == 1) positionX += virusWidth / 2;
       let positionY = row * virusHeight * 0.75;
 
-      let pointOnLand = (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvg)
+      let pointOnLand = (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvgElement)
         // sides
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvg) // top
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvg) // right
-        || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvg) // bottom
-        || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvg) // left
+        || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvgElement) // top
+        || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvgElement) // right
+        || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvgElement) // bottom
+        || (worldSvgElement.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvgElement) // left
         // edges
         // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY) != worldSvg) // top left
         // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY) != worldSvg) // top right

@@ -1,12 +1,27 @@
-var worldSvg;
-var virusMap: HTMLDivElement;
+// html elements
+var worldSvgElement: SVGElement;
+var virusMapElement: HTMLElement;
+var cycleCounterElement: HTMLElement;
+var infectedCountElement: HTMLElement;
+var healthyCountElement: HTMLElement;
 
-var virusColumns: number;
-var virusRows: number;
+// intervals 
+var simulationInterval: number;
+var hudInterval: number;
 
+// matrices
 var virusMatrix: Array<Array<number>>;
 var virusMatrixNextStep: Array<Array<number>>;
 var seaMatrix: Array<Array<number>>;
+
+var virusColumns: number;
+var virusRows: number;
+var mouseIsDown: boolean = false;
+
+// hud
+var cycleCount: number = 0;
+var possibleVirusCount: number = 0;
+var infectedCount: number = 0;
 
 
 
@@ -17,8 +32,11 @@ function onSvgLoad() {
 }
 
 function assignHtmlVariables() {
-  worldSvg = svgObject.contentDocument.querySelector("svg");
-  virusMap = document.getElementById("virusMap") as HTMLDivElement;
+  worldSvgElement = svgObject.contentDocument.querySelector("svg");
+  virusMapElement = document.querySelector("#virusMap");
+  cycleCounterElement = document.querySelector(".cycleCounter span");
+  infectedCountElement = document.querySelector(".infectedCount span");
+  healthyCountElement = document.querySelector(".healthyCount span");
 }
 
 function pointInSea(column: number, row: number) {
@@ -34,7 +52,8 @@ function initializeSimulation() {
 }
 
 function startSimluation() {
-  const interval = setInterval(draw, 1000 / framerate);
+  simulationInterval = setInterval(draw, 1000 / maxFramerate);
+  hudInterval = setInterval(updateHud, 1000 / maxHudFramerate);
   
   (<HTMLElement>document.querySelector(".splash-screen")).style.visibility = "hidden";
 
@@ -85,18 +104,14 @@ function createVirusMatrix() {
       virus.style.opacity = "0";
       // virus.style.visibility = "hidden";
 
-      virusMap.appendChild(virus);
+      virusMapElement.appendChild(virus);
     }
   }
 }
 
-
-var cycleCount = 0;
 function draw() {
   cycleCount++;
-  
-  if (logCyclus) console.log("Cycle: ", cycleCount);
-    
+      
   for ( let row = 0; row < virusRows; row++) {
     for ( let column = 0; column < virusColumns; column++) {
       let currentVirus = document.getElementById(`${column}-${row}`);
@@ -116,9 +131,6 @@ function draw() {
   if (logCyclus) console.log("==========");
 }
 
-
-var all = 0;
-var current = 0;
 function placeVirusRandomly() {
   for ( let row = 0; row < virusRows; row++) {
     for (let column = 0; column < virusColumns; column++) {
@@ -129,12 +141,12 @@ function placeVirusRandomly() {
       }
       else if (Math.random() <= spawnProbability) {
         randomNumber = 1;
-        current++;
+        infectedCount++;
       }
 
       virusMatrix[column][row] = randomNumber;
 
-      all++;
+      possibleVirusCount++;
     }
   }
 
@@ -142,8 +154,9 @@ function placeVirusRandomly() {
 }
 
 function generate() {
-  current = 0;
-  all = 0;
+  infectedCount = 0;
+  possibleVirusCount = 0;
+
   // Loop through every spot in our 2D array and check spots neighbors
   for (let column = 0; column < virusColumns; column++) {
     for (let row = 0; row < virusRows; row++) {
@@ -154,20 +167,16 @@ function generate() {
 
       gameOfLife(column, row)   
 
-      if (virusMatrixNextStep[column][row] == 1) current++;
-      all++;
+      if (virusMatrixNextStep[column][row] == 1) infectedCount++;
+      possibleVirusCount++;
     }
   }
-
-  if (logCyclus) console.log("alive: ", current);
-  if (logCyclus) console.log("dead: ", all - current);
 
   virusMatrix = virusMatrixNextStep.map(function(arr) {
     return arr.slice();
   });
 }
 
-var mouseIsDown: boolean = false;
 function enableVirusPlacement() {
   document.onmousedown = (e) => { 
     mouseIsDown = true;
@@ -192,4 +201,10 @@ function placeVirus(e: MouseEvent) {
 
   // we can already make the tile visible, but it's functionality/spreading only starts on next frame
   // virus.style.opacity = "0.5";
+}
+
+function updateHud() {
+  cycleCounterElement.innerText = cycleCount.toString();
+  infectedCountElement.innerText = infectedCount.toString();
+  healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }

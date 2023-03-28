@@ -3,19 +3,42 @@
   <head>
     <title>Virus Simulation</title>
     <link rel="icon" type="image/x-icon" href="/assets/favicon.png">  
+    
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
+    <script src="https://kit.fontawesome.com/e4698e5b64.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="src/css/hud.css">
     <link rel="stylesheet" href="src/css/splashScreen.css">
     <link rel="stylesheet" href="src/css/styles.css">
     <link rel="stylesheet" href="src/css/svg.css">
     <link rel="stylesheet" href="src/css/virus.css">
   </head>
   <body>
-    <div class="splash-screen">
-      <div class="loader">.</div> 
-    </div>
-
+    <!-- simulation -->
     <object id="svgObject" data="assets/world.svg"></object>
-
     <div id="virusMap"></div>
+    
+    <!-- hud -->
+    <div class="cycleCounter">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>0</span>
+    </div>
+    <div class="infectedCount">
+      <i class="fa-solid fa-viruses"></i>
+      <span>0</span>
+    </div>
+    <div class="healthyCount">
+      <i class="fa-solid fa-heart-pulse"></i>
+      <span>0</span>
+    </div>
+    
+    <!-- splashscreen -->
+    <div class="splash-screen">
+      <div class="content">
+        <span>Initializing simulation...</span>
+        <div class="loader"></div> 
+      </div>
+    </div>
   </body>
   <script src="out/constants.js"></script>
   <script src="out/gameOfLife.js"></script>

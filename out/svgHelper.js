@@ -17,8 +17,8 @@ function determineSvgSize() {
     // set sizes
     svgObject.style.width = "".concat(width, "px");
     svgObject.style.height = "".concat(height, "px");
-    virusMap.style.width = "".concat(calcWidth, "px");
-    virusMap.style.height = "".concat(calcHeight, "px");
+    virusMapElement.style.width = "".concat(calcWidth, "px");
+    virusMapElement.style.height = "".concat(calcHeight, "px");
     console.log("svg size determined");
 }
 function createSeaMatrix() {
@@ -32,12 +32,12 @@ function createSeaMatrix() {
             if (row % 2 == 1)
                 positionX += virusWidth / 2;
             var positionY = row * virusHeight * 0.75;
-            var pointOnLand = (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvg)
+            var pointOnLand = (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight / 2) != worldSvgElement)
                 // sides
-                || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvg) // top
-                || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvg) // right
-                || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvg) // bottom
-                || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvg); // left
+                || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY) != worldSvgElement) // top
+                || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth, positionY + virusHeight / 2) != worldSvgElement) // right
+                || (worldSvgElement.ownerDocument.elementFromPoint(positionX + virusWidth / 2, positionY + virusHeight) != worldSvgElement) // bottom
+                || (worldSvgElement.ownerDocument.elementFromPoint(positionX, positionY + virusHeight / 2) != worldSvgElement); // left
             // edges
             // || (worldSvg.ownerDocument.elementFromPoint(positionX, positionY) != worldSvg) // top left
             // || (worldSvg.ownerDocument.elementFromPoint(positionX + virusWidth, positionY) != worldSvg) // top right
