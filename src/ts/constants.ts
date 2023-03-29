@@ -3,12 +3,13 @@ const maxHudFramerate: number = maxFramerate;
 
 const virusWidth: number = 8;
 const virusHeight: number = virusWidth;
-// const brushSize: number = 1;
 
 const minPopulation: number = 1;
 const overPopulation: number = 10;
 const spawnProbability = 0.001;
 
+const brushSizeMin = 1;
+const brushSizeMax = 5;
 
 
 // debug

@@ -2,6 +2,7 @@
 
 ## Ideas
 High Prio:
+* make virusWidth adjustable from hud
 * specific virus start pattern instead of single tile
   * meaningful patterns
 * airplane lines for infecting islands with no intial virus

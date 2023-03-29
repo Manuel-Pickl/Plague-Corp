@@ -6,38 +6,73 @@ function gameOfLife(column: number, row: number) {
 
 // Get the number of active neighboring virus tiles
 /**
- * @param {string=} column - The column of the virus tile
+ * @param {number} column - The column of the virus tile
  * @param {number} row - The row of the virus tile
  * @returns {number} The number of active neighboring virus tiles
  */
 function getActiveNeighborCount(column: number, row: number) {
-    // add up all the states in a 2,3,2 surrounding hexagon
     let activeNeighborCount = 0;
 
-    if      ((row % 2 == 0) && (column > 0) && (row > 0))             activeNeighborCount += virusMatrix[column - 1][row - 1];
-    else if ((column < virusColumns - 1) && (row > 0))                activeNeighborCount += virusMatrix[column + 1][row - 1];
-    if      (row > 0)                                                 activeNeighborCount += virusMatrix[column][row - 1];
-
-    if      (column > 0)                                              activeNeighborCount += virusMatrix[column - 1][row];
-    if      (column < virusColumns - 1)                               activeNeighborCount += virusMatrix[column + 1][row];
-
-    if      (row < virusRows - 1)                                     activeNeighborCount += virusMatrix[column][row + 1];
-    if      ((row % 2 == 0) && (column > 0) && (row < virusRows - 1)) activeNeighborCount += virusMatrix[column - 1][row + 1];
-    else if ((column < virusColumns - 1) && (row < virusRows - 1))    activeNeighborCount += virusMatrix[column + 1][row + 1];
-
-    // check if bound tiles are skips
-    // if (row % 2 == 0) neighbors += virusMatrix[column - 1][row - 1];
-    // else              neighbors += virusMatrix[column + 1][row - 1];
-    //                   neighbors += virusMatrix[column][row - 1];
-
-    //                   neighbors += virusMatrix[column - 1][row];
-    //                   neighbors += virusMatrix[column + 1][row];
-
-    //                   neighbors += virusMatrix[column][row + 1];
-    // if (row % 2 == 0) neighbors += virusMatrix[column - 1][row + 1];
-    // else              neighbors += virusMatrix[column + 1][row + 1];
+    let neighbors = getNeighbors(column, row);
+    neighbors.forEach(neighbor => activeNeighborCount += virusMatrix[neighbor[0]][neighbor[1]]);
 
     return activeNeighborCount;
+}
+
+// Get all the neighboring virus tiles
+/**
+ * @param {number} column - The column of the virus tile
+ * @param {number} row - The row of the virus tile
+ * @param {number} radius - The row of the virus tile, default is 1
+ * @returns {[number, number][]} An array of all neighbors in specified radius. The elements are returned as a tuple of column & row
+ */
+function getNeighbors(column: number, row: number, radius: number = 1) {
+    let neighbors = new Array<[number, number]>();
+
+    if (radius == 0) return neighbors;
+    else if (radius == 1) {
+        // top row
+        if      ((row % 2 == 0) && (column > 0) && (row > 0))             neighbors.push([column - 1, row - 1]);
+        else if ((column < virusColumns - 1) && (row > 0))                neighbors.push([column + 1, row - 1]);
+        if      (row > 0)                                                 neighbors.push([column, row - 1]);
+
+        // middle row
+        if      (column > 0)                                              neighbors.push([column - 1, row]);
+        if      (column < virusColumns - 1)                               neighbors.push([column + 1, row]);
+
+        // bottom row
+        if      (row < virusRows - 1)                                     neighbors.push([column, row + 1]);
+        if      ((row % 2 == 0) && (column > 0) && (row < virusRows - 1)) neighbors.push([column - 1, row + 1]);
+        else if ((column < virusColumns - 1) && (row < virusRows - 1))    neighbors.push([column + 1, row + 1]);
+
+        /// loop solution for radius == 1
+        // for (let r = row - radius; r <= row + radius; r++) {
+        // //     if (r >= virusColumns || r < 0) continue;
+
+        // //     for (let c = column - radius; c <= column + radius; c++) {
+        // //         if (c >= virusColumns || c < 0) continue;
+        // //         if ((row % 2 == 1) && (c == column - radius) && ((r == row - radius) || (r == row + radius))) continue;
+        // //         else if ((row % 2 == 0) && (c == column + radius) && ((r == row - radius) || (r == row + radius))) continue;
+
+        // //         neighbors.push([c, r]);
+        // //     }
+        // // }
+    }
+    // recurse solution
+    // -> performance struggles on higher brushSizes > 5
+    else if (radius > 1) {
+        neighbors = getNeighbors(column, row, radius - 1);
+
+        neighbors.forEach(neighbor => {
+            let nextNeighbors = getNeighbors(neighbor[0], neighbor[1]);
+            nextNeighbors.forEach(nextNeighbor => {
+                if (neighbors.indexOf(nextNeighbor) != -1) return; // skip if virus tile already added
+                neighbors.push(nextNeighbor);
+            });
+        });
+    }
+
+    return neighbors;
 }
 
 // Determine if the virus tile is alive for the next cycle

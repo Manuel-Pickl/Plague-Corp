@@ -4,15 +4,18 @@ var virusMapElement: HTMLElement;
 var cycleCounterElement: HTMLElement;
 var infectedCountElement: HTMLElement;
 var healthyCountElement: HTMLElement;
+var brushSizeElement: HTMLElement;
+var decreaseBrushSizeElement: HTMLElement;
+var increaseBrushSizeElement: HTMLElement;
 
 // intervals 
 var simulationInterval: number;
 var hudInterval: number;
 
 // matrices
-var virusMatrix: Array<Array<number>>;
-var virusMatrixNextStep: Array<Array<number>>;
-var seaMatrix: Array<Array<number>>;
+var virusMatrix: number[][];
+var virusMatrixNextStep: number[][];
+var seaMatrix: number[][];
 
 var virusColumns: number;
 var virusRows: number;
@@ -20,6 +23,8 @@ var mouseIsDown: boolean = false;
 
 // hud
 var cycleCount: number = 0;
+var brushSize: number = 1;
+
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
 
@@ -27,6 +32,8 @@ var infectedCount: number = 0;
 
 function onSvgLoad() {
   assignHtmlVariables();
+  assignHtmlEvents();
+
   initializeSimulation();
   startSimluation();
 }
@@ -34,9 +41,26 @@ function onSvgLoad() {
 function assignHtmlVariables() {
   worldSvgElement = svgObject.contentDocument.querySelector("svg");
   virusMapElement = document.querySelector("#virusMap");
+
   cycleCounterElement = document.querySelector(".cycleCounter span");
   infectedCountElement = document.querySelector(".infectedCount span");
   healthyCountElement = document.querySelector(".healthyCount span");
+
+  brushSizeElement = document.querySelector(".brushSize #brushSize");
+  decreaseBrushSizeElement = document.querySelector(".brushSize #decreaseBrushSize");
+  increaseBrushSizeElement = document.querySelector(".brushSize #increaseBrushSize");
+}
+
+function assignHtmlEvents() {
+  decreaseBrushSizeElement.onclick = () => {
+    if (brushSize > brushSizeMin) brushSize--;
+    brushSizeElement.innerText = brushSize.toString();
+  };
+
+  increaseBrushSizeElement.onclick = () => {
+    if (brushSize < brushSizeMax) brushSize++;
+    brushSizeElement.innerText = brushSize.toString();
+  };
 }
 
 function pointInSea(column: number, row: number) {
@@ -190,17 +214,28 @@ function enableVirusPlacement() {
 function placeVirus(e: MouseEvent) {
   if (!mouseIsDown) return;
 
+  // clicked element has to be a virus tile
   let virus = <HTMLElement>e.target;
   if (!virus.classList.contains("virus")) return;
 
+  // determine column and column of clicked virus tile
   let column = parseInt(virus.id.split("-")[0]);
   let row = parseInt(virus.id.split("-")[1]);
-  if (pointInSea(column, row)) return;
+  
+  // get all relevant virus tiles
+  let virusTiles = new Array<[number, number]>();
+  virusTiles.push([column, row]);                     // virus tile on mouse point           
+  getNeighbors(column, row, brushSize - 1)
+    .forEach(neighbor => virusTiles.push(neighbor));  // all neighboring virus tiles
 
-  virusMatrix[column][row] = 1;
-
-  // we can already make the tile visible, but it's functionality/spreading only starts on next frame
-  // virus.style.opacity = "0.5";
+  // enable all virus tiles that are not in the sea
+  virusTiles.forEach(neighbor => {
+    if (pointInSea(neighbor[0], neighbor[1])) return;
+    virusMatrix[neighbor[0]][neighbor[1]] = 1;
+    
+    // we can already make the tile visible, but it's functionality/spreading only starts on next frame
+    document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = "0.5"
+  });
 }
 
 function updateHud() {
