@@ -1,12 +1,3 @@
-// html elements
-var worldSvgElement;
-var virusMapElement;
-var cycleCounterElement;
-var infectedCountElement;
-var healthyCountElement;
-var brushSizeElement;
-var decreaseBrushSizeElement;
-var increaseBrushSizeElement;
 // intervals 
 var simulationInterval;
 var hudInterval;
@@ -19,6 +10,7 @@ var virusRows;
 var mouseIsDown = false;
 // hud
 var cycleCount = 0;
+var brushFill = true;
 var brushSize = 1;
 var possibleVirusCount = 0;
 var infectedCount = 0;
@@ -27,28 +19,6 @@ function onSvgLoad() {
     assignHtmlEvents();
     initializeSimulation();
     startSimluation();
-}
-function assignHtmlVariables() {
-    worldSvgElement = svgObject.contentDocument.querySelector("svg");
-    virusMapElement = document.querySelector("#virusMap");
-    cycleCounterElement = document.querySelector(".cycleCounter span");
-    infectedCountElement = document.querySelector(".infectedCount span");
-    healthyCountElement = document.querySelector(".healthyCount span");
-    brushSizeElement = document.querySelector(".brushSize #brushSize");
-    decreaseBrushSizeElement = document.querySelector(".brushSize #decreaseBrushSize");
-    increaseBrushSizeElement = document.querySelector(".brushSize #increaseBrushSize");
-}
-function assignHtmlEvents() {
-    decreaseBrushSizeElement.onclick = function () {
-        if (brushSize > brushSizeMin)
-            brushSize--;
-        brushSizeElement.innerText = brushSize.toString();
-    };
-    increaseBrushSizeElement.onclick = function () {
-        if (brushSize < brushSizeMax)
-            brushSize++;
-        brushSizeElement.innerText = brushSize.toString();
-    };
 }
 function pointInSea(column, row) {
     return !seaMatrix[column][row];
@@ -92,6 +62,7 @@ function createVirusMatrix() {
     // create all virus div elements
     for (var row = 0; row < virusRows; row++) {
         for (var column = 0; column < virusColumns; column++) {
+            // ToDo: try to skip virus tiles that are in the sea
             var virus = document.createElement("div");
             virus.id = "".concat(column, "-").concat(row);
             virus.classList.add("virus");

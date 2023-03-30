@@ -1,13 +1,3 @@
-// html elements
-var worldSvgElement: SVGElement;
-var virusMapElement: HTMLElement;
-var cycleCounterElement: HTMLElement;
-var infectedCountElement: HTMLElement;
-var healthyCountElement: HTMLElement;
-var brushSizeElement: HTMLElement;
-var decreaseBrushSizeElement: HTMLElement;
-var increaseBrushSizeElement: HTMLElement;
-
 // intervals 
 var simulationInterval: number;
 var hudInterval: number;
@@ -23,6 +13,7 @@ var mouseIsDown: boolean = false;
 
 // hud
 var cycleCount: number = 0;
+var brushFill: boolean = true;
 var brushSize: number = 1;
 
 var possibleVirusCount: number = 0;
@@ -36,31 +27,6 @@ function onSvgLoad() {
 
   initializeSimulation();
   startSimluation();
-}
-
-function assignHtmlVariables() {
-  worldSvgElement = svgObject.contentDocument.querySelector("svg");
-  virusMapElement = document.querySelector("#virusMap");
-
-  cycleCounterElement = document.querySelector(".cycleCounter span");
-  infectedCountElement = document.querySelector(".infectedCount span");
-  healthyCountElement = document.querySelector(".healthyCount span");
-
-  brushSizeElement = document.querySelector(".brushSize #brushSize");
-  decreaseBrushSizeElement = document.querySelector(".brushSize #decreaseBrushSize");
-  increaseBrushSizeElement = document.querySelector(".brushSize #increaseBrushSize");
-}
-
-function assignHtmlEvents() {
-  decreaseBrushSizeElement.onclick = () => {
-    if (brushSize > brushSizeMin) brushSize--;
-    brushSizeElement.innerText = brushSize.toString();
-  };
-
-  increaseBrushSizeElement.onclick = () => {
-    if (brushSize < brushSizeMax) brushSize++;
-    brushSizeElement.innerText = brushSize.toString();
-  };
 }
 
 function pointInSea(column: number, row: number) {
@@ -113,7 +79,7 @@ function createVirusMatrix() {
   // create all virus div elements
   for (let row = 0; row < virusRows; row++) {
     for (let column = 0; column < virusColumns; column++) {
-
+      // ToDo: try to skip virus tiles that are in the sea
       var virus = document.createElement("div");
       virus.id = `${column}-${row}`;
       virus.classList.add("virus");

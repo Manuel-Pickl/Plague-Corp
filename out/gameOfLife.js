@@ -60,6 +60,7 @@ function getNeighbors(column, row, radius) {
     }
     // recurse solution
     // -> performance struggles on higher brushSizes > 5
+    // ToDo: try to implement a radius/degree based function
     else if (radius > 1) {
         neighbors = getNeighbors(column, row, radius - 1);
         neighbors.forEach(function (neighbor) {

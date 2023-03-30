@@ -2,8 +2,11 @@
 
 ## Ideas
 High Prio:
-* make virusWidth adjustable from hud
+* hud
+  * game of life rules changable from hud: minPopulation, maxPopulation
+  * framerate
 * specific virus start pattern instead of single tile
+  * different brush sizes
   * meaningful patterns
 * airplane lines for infecting islands with no intial virus
 * performance optimization for seaMatrix-creation
