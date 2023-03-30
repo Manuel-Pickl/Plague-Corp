@@ -3,7 +3,7 @@
 ## Ideas
 High Prio:
 * hud
-  * game of life rules changable from hud: minPopulation, maxPopulation
+  * game of life rules changeable from hud: minPopulation, maxPopulation
   * framerate
 * specific virus start pattern instead of single tile
   * different brush sizes
