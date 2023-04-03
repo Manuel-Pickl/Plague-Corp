@@ -60,7 +60,9 @@ function getNeighbors(column: number, row: number, radius: number = 1) {
     }
     // recurse solution
     // -> performance struggles on higher brushSizes > 5
-    // ToDo: try to implement a radius/degree based function
+    /// ToDo: try to implement a radius based function
+    /// https://jsfiddle.net/fuYHv/14/
+    /// https://stackoverflow.com/questions/4002059/get-dom-elements-inside-a-rectangle-area-of-a-page
     else if (radius > 1) {
         neighbors = getNeighbors(column, row, radius - 1);
 
@@ -85,7 +87,7 @@ function getNeighbors(column: number, row: number, radius: number = 1) {
  */
 function determineLife(column: number, row: number, activeNeighborCount: number) {
     if      (activeNeighborCount < minPopulation)   return 0; // Loneliness
-    else if (activeNeighborCount > overPopulation)  return 0; // Overpopulation
+    else if (activeNeighborCount >= overPopulation)  return 0; // Overpopulation
     else if (activeNeighborCount >= minPopulation)  return 1; // Reproduction
     else console.log("SHOULD NEVER HAPPEN!");
 }

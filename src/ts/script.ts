@@ -15,6 +15,8 @@ var mouseIsDown: boolean = false;
 var cycleCount: number = 0;
 var brushFill: boolean = true;
 var brushSize: number = 1;
+var minPopulation: number = 1;
+var overPopulation: number = 7;
 
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
@@ -24,6 +26,7 @@ var infectedCount: number = 0;
 function onSvgLoad() {
   assignHtmlVariables();
   assignHtmlEvents();
+  initializeHtmlElements();
 
   initializeSimulation();
   startSimluation();

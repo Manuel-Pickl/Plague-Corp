@@ -46,6 +46,14 @@
     inset: 60px auto auto 10px;
 }
 
+.minPopulation {
+    inset: 110px auto auto 10px;
+}
+
+.overPopulation {
+    inset: 160px auto auto 10px;
+}
+
 
 
 .infectedCount {
