@@ -35,60 +35,70 @@ function load() {
 }
 
 function createMatrices() {
+  const start = performance.now();
   createVirusMatrix();
   createSeaMatrix();
+
+  console.log(performance.now() - start + ' ' + 'ms');
 }
+const isOnLandCache = new Map<string, boolean>();
 
-function createSeaMatrix() {
-  seaMatrix = new Array(virusColumns);
-  for (let column = 0; column < virusColumns; column++) {
-    seaMatrix[column] = new Array(virusRows);
-  }
+function preprocessWorldSvg(
+  worldSvgElement: HTMLElement,
+  columns: number,
+  rows: number
+): Uint8Array {
+  const lookupTable = new Uint8Array(columns * rows);
 
-  const virusSvg = d3
-    .create('svg')
-    .attr('width', virusWidth)
-    .attr('height', virusHeight)
-    .append('g');
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      let positionX = column * virusWidth;
+      if (row % 2 === 1) positionX += virusWidth / 2;
+      let positionY = row * virusHeight * 0.75;
 
-  for (let row = 0; row < virusRows; row++) {
-    for (let column = 0; column < virusColumns; column++) {
-      const positionX =
-        column * virusWidth + (row % 2 == 1 ? virusWidth / 2 : 0);
-      const positionY = row * virusHeight * 0.75;
-
-      virusSvg
-        .append('circle')
-        .attr('cx', positionX + virusWidth / 2)
-        .attr('cy', positionY + virusHeight / 2)
-        .attr('r', virusWidth / 2)
-        .attr('fill', 'transparent')
-        .attr('pointer-events', 'visible');
-
-      const pointOnLand =
-        worldSvg.contains(virusSvg.node()) ||
-        worldSvg.ownerDocument.elementFromPoint(
+      const onLand =
+        worldSvgElement.ownerDocument.elementFromPoint(
           positionX + virusWidth / 2,
-          positionY
-        ) != worldSvg || // top
-        worldSvg.ownerDocument.elementFromPoint(
-          positionX + virusWidth,
           positionY + virusHeight / 2
-        ) != worldSvg || // right
-        worldSvg.ownerDocument.elementFromPoint(
-          positionX + virusWidth / 2,
-          positionY + virusHeight
-        ) != worldSvg || // bottom
-        worldSvg.ownerDocument.elementFromPoint(
-          positionX,
-          positionY + virusHeight / 2
-        ) != worldSvg; // left
-
-      seaMatrix[column][row] = pointOnLand ? 1 : 0;
+        ) !== worldSvgElement;
+      lookupTable[column + row * columns] = onLand ? 1 : 0;
     }
   }
 
-  virusSvg.remove();
+  return lookupTable;
+}
+
+function isOnLand(
+  positionX: number,
+  positionY: number,
+  worldSvgElement: HTMLElement
+): boolean {
+  const cacheKey = `${positionX},${positionY}`;
+  if (isOnLandCache.has(cacheKey)) {
+    return isOnLandCache.get(cacheKey)!;
+  }
+
+  const onLand =
+    worldSvgElement.ownerDocument.elementFromPoint(
+      positionX + virusWidth / 2,
+      positionY + virusHeight / 2
+    ) !== worldSvgElement;
+
+  isOnLandCache.set(cacheKey, onLand);
+  return onLand;
+}
+
+function createSeaMatrix(): number[][] {
+  const lookupTable = preprocessWorldSvg(worldSvg, virusColumns, virusRows);
+  seaMatrix = Array.from({ length: virusColumns }, () => new Array(virusRows));
+
+  for (let row = 0; row < virusRows; row++) {
+    for (let column = 0; column < virusColumns; column++) {
+      seaMatrix[column][row] = lookupTable[column + row * virusColumns];
+    }
+  }
+
+  return seaMatrix;
 }
 
 function createVirusMatrix() {
