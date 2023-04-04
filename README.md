@@ -3,13 +3,18 @@
 ## Ideas
 High Prio:
 * hud
-  * game of life rules changeable from hud: minPopulation, maxPopulation
+  * underPopulation
+  * overPopulation
   * framerate
 * specific virus start pattern instead of single tile
   * different brush sizes
   * meaningful patterns
 * airplane lines for infecting islands with no intial virus
-* performance optimization for seaMatrix-creation
+* performance optimization for
+  * seaMatrix-creation
+  * drawing functin
+  * generation algorithm
+  * bigger brushSize
 
 Medium Prio:
 * resize doesn't break ui
