@@ -19,11 +19,11 @@ function pointInSea(column: number, row: number) {
   return !seaMatrix[column][row];
 }
 
-function load() {
+async function load() {
   let splashScreen = document.querySelector('.splash-screen') as HTMLElement;
 
   determineSvgSize();
-  createMatrices();
+  await createMatrices();
   placeVirusRandomly();
 
   const interval = setInterval(draw, 1000 / framerate);
@@ -34,68 +34,113 @@ function load() {
   splashScreen.style.visibility = 'hidden';
 }
 
-function createMatrices() {
+async function createMatrices() {
   const start = performance.now();
   createVirusMatrix();
-  createSeaMatrix();
+  seaMatrix = await createSeaMatrix();
 
   console.log(performance.now() - start + ' ' + 'ms');
 }
-const isOnLandCache = new Map<string, boolean>();
+const isOnLandCache = new Map<number, boolean>();
 
-function preprocessWorldSvg(
+function encodeCacheKey(positionX: number, positionY: number): number {
+  return positionX + positionY * 1e6; // Assuming positionX and positionY are always < 1e6
+}
+
+async function preprocessWorldSvg(
   worldSvgElement: HTMLElement,
   columns: number,
   rows: number
-): Uint8Array {
+) {
   const lookupTable = new Uint8Array(columns * rows);
 
-  for (let row = 0; row < rows; row++) {
-    for (let column = 0; column < columns; column++) {
-      let positionX = column * virusWidth;
-      if (row % 2 === 1) positionX += virusWidth / 2;
-      let positionY = row * virusHeight * 0.75;
+  // Create an offscreen canvas
+  const offscreenCanvas = new OffscreenCanvas(
+    columns * virusWidth,
+    rows * virusHeight * 0.75
+  );
+  const ctx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
 
-      const onLand =
-        worldSvgElement.ownerDocument.elementFromPoint(
-          positionX + virusWidth / 2,
-          positionY + virusHeight / 2
-        ) !== worldSvgElement;
-      lookupTable[column + row * columns] = onLand ? 1 : 0;
-    }
-  }
+  // Create a new Image object
+  const svgImage = new Image();
 
+  // Convert the world SVG element to a data URL
+  const svgDataUrl =
+    'data:image/svg+xml;charset=utf-8,' +
+    encodeURIComponent(worldSvgElement.outerHTML);
+
+  // Set the src attribute of the image to be the SVG's data URL
+  svgImage.src = svgDataUrl;
+
+  // When the image loads, draw it onto the canvas
+  const loadPromise = new Promise<void>((resolve) => {
+    svgImage.onload = () => {
+      console.log(
+        (offscreenCanvas.width - svgImage.width) / 2,
+        (offscreenCanvas.height - svgImage.height) / 2
+      );
+      if (ctx) {
+        ctx.drawImage(
+          svgImage,
+          (offscreenCanvas.width - svgImage.width) * 0.5,
+          (offscreenCanvas.height - svgImage.height) * 0.5
+        );
+      }
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          let positionX = column * virusWidth;
+          if (row % 2 === 1) positionX += virusWidth / 2;
+          let positionY = row * virusHeight * 0.75;
+
+          const cacheKey = encodeCacheKey(positionX, positionY);
+          let onLand;
+          if (isOnLandCache.has(cacheKey)) {
+            onLand = isOnLandCache.get(cacheKey)!;
+          } else {
+            if (ctx) {
+              // Use getImageData to obtain the color data at the specified coordinates
+              const imageData = ctx.getImageData(
+                positionX + virusWidth / 2,
+                positionY + virusHeight / 2,
+                1,
+                1
+              );
+
+              // // Check if the pixel is on land by examining its alpha value (assuming land is opaque and water is transparent)
+              // const value = imageData.data.reduce((a, b) => a + b);
+              // if (value > 0) console.log(value);
+              onLand = imageData.data[3] !== 0;
+            } else {
+              onLand = false;
+            }
+            isOnLandCache.set(cacheKey, onLand);
+          }
+          lookupTable[column + row * columns] = onLand ? 1 : 0;
+        }
+      }
+      resolve();
+    };
+  });
+  await loadPromise;
   return lookupTable;
 }
 
-function isOnLand(
-  positionX: number,
-  positionY: number,
-  worldSvgElement: HTMLElement
-): boolean {
-  const cacheKey = `${positionX},${positionY}`;
-  if (isOnLandCache.has(cacheKey)) {
-    return isOnLandCache.get(cacheKey)!;
-  }
+async function createSeaMatrix() {
+  const lookupTable = await preprocessWorldSvg(
+    worldSvg,
+    virusColumns,
+    virusRows
+  );
+  const seaMatrix = new Array(virusColumns);
 
-  const onLand =
-    worldSvgElement.ownerDocument.elementFromPoint(
-      positionX + virusWidth / 2,
-      positionY + virusHeight / 2
-    ) !== worldSvgElement;
-
-  isOnLandCache.set(cacheKey, onLand);
-  return onLand;
-}
-
-function createSeaMatrix(): number[][] {
-  const lookupTable = preprocessWorldSvg(worldSvg, virusColumns, virusRows);
-  seaMatrix = Array.from({ length: virusColumns }, () => new Array(virusRows));
-
-  for (let row = 0; row < virusRows; row++) {
-    for (let column = 0; column < virusColumns; column++) {
-      seaMatrix[column][row] = lookupTable[column + row * virusColumns];
+  for (let i = 0; i < lookupTable.length; i++) {
+    const column = i % virusColumns;
+    const row = Math.floor(i / virusColumns);
+    if (!seaMatrix[column]) {
+      seaMatrix[column] = new Array(virusRows);
     }
+
+    seaMatrix[column][row] = lookupTable[i];
   }
 
   return seaMatrix;
