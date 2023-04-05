@@ -1,6 +1,6 @@
 const framerate = 5;
 
-const virusWidth = 15;
+const virusWidth = 10;
 const virusHeight = virusWidth;
 
 const minPopulation = 1;

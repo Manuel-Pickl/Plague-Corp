@@ -72,9 +72,12 @@ async function preprocessWorldSvg(
       if (ctx) {
         ctx.drawImage(
           svgImage,
-          (offscreenCanvas.width - svgImage.width) * 0.5,
-          (offscreenCanvas.height - svgImage.height) * 0.5
+          0,
+          0,
+          parseInt(svgObject.style.width),
+          parseInt(svgObject.style.height)
         );
+
       }
       for (let row = 0; row < rows; row++) {
         for (let column = 0; column < columns; column++) {
