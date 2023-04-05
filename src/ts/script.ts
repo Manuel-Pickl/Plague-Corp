@@ -41,44 +41,34 @@ async function createMatrices() {
 
   console.log(performance.now() - start + ' ' + 'ms');
 }
-const isOnLandCache = new Map<number, boolean>();
-
-function encodeCacheKey(positionX: number, positionY: number): number {
-  return positionX + positionY * 1e6; // Assuming positionX and positionY are always < 1e6
-}
 
 async function preprocessWorldSvg(
   worldSvgElement: HTMLElement,
   columns: number,
   rows: number
 ) {
-  const lookupTable = new Uint8Array(columns * rows);
+  const seaMatrix = new Array(columns)
+    .fill(null)
+    .map(() => new Array(rows).fill(0));
 
-  // Create an offscreen canvas
   const offscreenCanvas = new OffscreenCanvas(
     columns * virusWidth,
     rows * virusHeight * 0.75
   );
-  const ctx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
+  const ctx: any = offscreenCanvas.getContext('2d', {
+    willReadFrequently: true,
+  });
 
-  // Create a new Image object
   const svgImage = new Image();
 
-  // Convert the world SVG element to a data URL
   const svgDataUrl =
     'data:image/svg+xml;charset=utf-8,' +
     encodeURIComponent(worldSvgElement.outerHTML);
 
-  // Set the src attribute of the image to be the SVG's data URL
   svgImage.src = svgDataUrl;
 
-  // When the image loads, draw it onto the canvas
   const loadPromise = new Promise<void>((resolve) => {
     svgImage.onload = () => {
-      console.log(
-        (offscreenCanvas.width - svgImage.width) / 2,
-        (offscreenCanvas.height - svgImage.height) / 2
-      );
       if (ctx) {
         ctx.drawImage(
           svgImage,
@@ -92,58 +82,31 @@ async function preprocessWorldSvg(
           if (row % 2 === 1) positionX += virusWidth / 2;
           let positionY = row * virusHeight * 0.75;
 
-          const cacheKey = encodeCacheKey(positionX, positionY);
           let onLand;
-          if (isOnLandCache.has(cacheKey)) {
-            onLand = isOnLandCache.get(cacheKey)!;
-          } else {
-            if (ctx) {
-              // Use getImageData to obtain the color data at the specified coordinates
-              const imageData = ctx.getImageData(
-                positionX + virusWidth / 2,
-                positionY + virusHeight / 2,
-                1,
-                1
-              );
+          if (ctx) {
+            const imageData = ctx.getImageData(
+              positionX + virusWidth / 2,
+              positionY + virusHeight / 2,
+              1,
+              1
+            );
 
-              // // Check if the pixel is on land by examining its alpha value (assuming land is opaque and water is transparent)
-              // const value = imageData.data.reduce((a, b) => a + b);
-              // if (value > 0) console.log(value);
-              onLand = imageData.data[3] !== 0;
-            } else {
-              onLand = false;
-            }
-            isOnLandCache.set(cacheKey, onLand);
+            onLand = imageData.data[3] !== 0;
+          } else {
+            onLand = false;
           }
-          lookupTable[column + row * columns] = onLand ? 1 : 0;
+          seaMatrix[column][row] = onLand ? 1 : 0;
         }
       }
       resolve();
     };
   });
   await loadPromise;
-  return lookupTable;
+  return seaMatrix;
 }
 
 async function createSeaMatrix() {
-  const lookupTable = await preprocessWorldSvg(
-    worldSvg,
-    virusColumns,
-    virusRows
-  );
-  const seaMatrix = new Array(virusColumns);
-
-  for (let i = 0; i < lookupTable.length; i++) {
-    const column = i % virusColumns;
-    const row = Math.floor(i / virusColumns);
-    if (!seaMatrix[column]) {
-      seaMatrix[column] = new Array(virusRows);
-    }
-
-    seaMatrix[column][row] = lookupTable[i];
-  }
-
-  return seaMatrix;
+  return preprocessWorldSvg(worldSvg, virusColumns, virusRows);
 }
 
 function createVirusMatrix() {
