@@ -21,12 +21,12 @@ var overPopulation: number = 7;
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
 
-function onSvgLoad() {
+async function onSvgLoad() {
   assignHtmlVariables();
   assignHtmlEvents();
   initializeHtmlElements();
 
-  initializeSimulation();
+  await initializeSimulation();
   startSimluation();
 }
 
@@ -34,9 +34,9 @@ function pointInSea(column: number, row: number) {
   return !seaMatrix[column][row];
 }
 
-function initializeSimulation() {
+async function initializeSimulation() {
   determineSvgSize();
-  createMatrices();
+  await createMatrices();
   // placeVirusRandomly();
 
   if (debugMode) console.log('simulation initialized');
@@ -46,17 +46,19 @@ function startSimluation() {
   simulationInterval = setInterval(draw, 1000 / maxFramerate);
   hudInterval = setInterval(updateHud, 1000 / maxHudFramerate);
 
-  (<HTMLElement>document.querySelector('.splash-screen')).style.visibility =
-    'hidden';
+  (<HTMLElement>document.querySelector('.splash-screen')).style.visibility = 'hidden';
 
   enableVirusPlacement();
 
   if (debugMode) console.log('simulation started');
 }
 
-function createMatrices() {
+async function createMatrices() {
+  const start = performance.now();
   createVirusMatrix();
-  seaMatrix = createSeaMatrix(worldSvgElement);
+  seaMatrix = await createSeaMatrix();
+
+  console.log(performance.now() - start + ' ' + 'ms');
 
   if (debugMode) console.log('game matrices created');
 }
@@ -167,7 +169,7 @@ function generate() {
 }
 
 function enableVirusPlacement() {
-  document.onmousedown = (e) => {
+  document.onmousedown = e => {
     mouseIsDown = true;
     placeVirus(e);
   };
@@ -175,7 +177,7 @@ function enableVirusPlacement() {
 
   document
     .querySelectorAll('.virus')
-    .forEach((virus) => ((<HTMLElement>virus).onmouseover = placeVirus));
+    .forEach(virus => ((<HTMLElement>virus).onmouseover = placeVirus));
 }
 
 function placeVirus(e: MouseEvent) {
@@ -192,25 +194,20 @@ function placeVirus(e: MouseEvent) {
   // get all relevant virus tiles
   let virusTiles = new Array<[number, number]>();
   virusTiles.push([column, row]); // virus tile on mouse point
-  getNeighbors(column, row, brushSize - 1).forEach((neighbor) =>
-    virusTiles.push(neighbor)
-  ); // all neighboring virus tiles
+  getNeighbors(column, row, brushSize - 1).forEach(neighbor => virusTiles.push(neighbor)); // all neighboring virus tiles
 
   // enable all virus tiles that are not in the sea
-  virusTiles.forEach((neighbor) => {
+  virusTiles.forEach(neighbor => {
     if (pointInSea(neighbor[0], neighbor[1])) return;
     virusMatrix[neighbor[0]][neighbor[1]] = 1;
 
     // we can already make the tile visible, but it's functionality/spreading only starts on next frame
-    document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity =
-      '0.5';
+    document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
   });
 }
 
 function updateHud() {
   cycleCounterElement.innerText = cycleCount.toString();
   infectedCountElement.innerText = infectedCount.toString();
-  healthyCountElement.innerText = (
-    possibleVirusCount - infectedCount
-  ).toString();
+  healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }
