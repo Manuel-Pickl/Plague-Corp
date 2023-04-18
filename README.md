@@ -2,6 +2,9 @@
 
 ## Ideas
 High Prio:
+* OTH Logo
+* life & death values as single checkbox values instead of range
+* safe button for screenshot (artifacts): must include map & variables (hud)
 * hud
   * underPopulation
   * overPopulation
