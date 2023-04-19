@@ -20,6 +20,7 @@ High Prio:
   * bigger brushSize
 
 Medium Prio:
+* pause and jump single frames back & forth
 * resize doesn't break ui
 * continent specific resistance
 * stat buff system for virus, e.g. virus spreading probability, dying probability
