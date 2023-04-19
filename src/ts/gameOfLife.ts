@@ -15,7 +15,31 @@ function getActiveNeighborCount(column: number, row: number) {
   return neighbors.reduce((count, neighbor) => count + virusMatrix[neighbor[0]][neighbor[1]], 0);
 }
 
-// Get all the neighboring virus tiles => https://www.redblobgames.com/grids/hexagons/#distances
+/**
+ * https://www.redblobgames.com/grids/hexagons/#conversions-offset
+ *
+ * All helper functions for conversion
+ */
+// Helper function to convert offset to axial
+function offsetToAxial(col, row) {
+  const q = col - (row - (row & 1)) / 2;
+  const r = row;
+  return [q, r];
+}
+
+// Helper function to convert axial to offset
+function axialToOffset(q, r) {
+  const col = q + (r - (r & 1)) / 2;
+  const row = r;
+  return [col, row];
+}
+
+// Helper function to add two axial coordinates
+function axialAdd(a, b) {
+  return [a[0] + b[0], a[1] + b[1]];
+}
+
+// Get all the neighboring virus tiles
 /**
  * @param {number} column - The column of the virus tile
  * @param {number} row - The row of the virus tile
@@ -23,26 +47,24 @@ function getActiveNeighborCount(column: number, row: number) {
  * @returns {[number, number][]} An array of all neighbors in specified radius. The elements are returned as a tuple of column & row
  */
 function getNeighbors(col: number, row: number, distance: number = 1) {
+  // store all coordiantes/neighbors
   const results = [];
 
-  // Convert to axial coordinates
-  const q = Math.floor(col + (row - (row & 1)) / 2);
-  const r = row;
+  /**
+   * https://www.redblobgames.com/grids/hexagons/#distances
+   */
+  // Iterate through all possible neighbors within the given distance
+  for (let di = -distance; di <= distance; di++) {
+    for (let dj = -distance; dj <= distance; dj++) {
+      if (Math.abs(di + dj) <= distance) {
+        // to make life easier => https://www.redblobgames.com/grids/hexagons/#distances-offset
+        const axialCoords = axialAdd(offsetToAxial(col, row), [di, dj]);
+        const [x, y] = axialToOffset(axialCoords[0], axialCoords[1]);
 
-  // Calculate the range in axial coordinates
-  for (let dx = -distance; dx <= distance; dx++) {
-    for (
-      let dy = Math.max(-distance, -dx - distance);
-      dy <= Math.min(distance, -dx + distance);
-      dy++
-    ) {
-      // Convert back to double-width offset coordinates
-      const x = q + dx - Math.floor((r + dy - ((r + dy) & 1)) / 2);
-      const y = r + dy;
-
-      // Check if the coordinates are within the allowed range
-      if (x >= 0 && x < virusColumns && y >= 0 && y < virusRows) {
-        results.push([x, y]);
+        // Check if the coordinates are within the allowed range
+        if (x >= 0 && x < virusColumns && y >= 0 && y < virusRows && !(x === col && y === row)) {
+          results.push([x, y]);
+        }
       }
     }
   }
