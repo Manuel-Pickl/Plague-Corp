@@ -39,40 +39,40 @@ function assignHtmlEvents() {
     assignoverPopulationEvents();
 }
 function assignBrushEvents() {
-    brushSymbol.onclick = function () {
+    brushSymbol.onclick = () => {
         brushFill = !brushFill;
         brushFillElement.style.visibility = brushFill ? "hidden" : "visible";
     };
-    decreaseBrushSizeElement.onclick = function () {
+    decreaseBrushSizeElement.onclick = () => {
         if (brushSize > brushSizeMin)
             brushSize--;
         brushSizeElement.innerText = brushSize.toString();
     };
-    increaseBrushSizeElement.onclick = function () {
+    increaseBrushSizeElement.onclick = () => {
         if (brushSize < brushSizeMax)
             brushSize++;
         brushSizeElement.innerText = brushSize.toString();
     };
 }
 function assignMinPopulationEvents() {
-    decreaseMinPopulationElement.onclick = function () {
+    decreaseMinPopulationElement.onclick = () => {
         if (minPopulation > minPopulationMin)
             minPopulation--;
         minPopulationElement.innerText = minPopulation.toString();
     };
-    increaseMinPopulationElement.onclick = function () {
+    increaseMinPopulationElement.onclick = () => {
         if (minPopulation < minPopulationMax)
             minPopulation++;
         minPopulationElement.innerText = minPopulation.toString();
     };
 }
 function assignoverPopulationEvents() {
-    decreaseOverPopulationElement.onclick = function () {
+    decreaseOverPopulationElement.onclick = () => {
         if (overPopulation > overPopulationMin)
             overPopulation--;
         overPopulationElement.innerText = overPopulation.toString();
     };
-    increaseOverPopulationElement.onclick = function () {
+    increaseOverPopulationElement.onclick = () => {
         if (overPopulation < overPopulationMax)
             overPopulation++;
         overPopulationElement.innerText = overPopulation.toString();

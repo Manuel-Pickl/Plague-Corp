@@ -1,6 +1,10 @@
 var svgObject: any = document.getElementById('svgObject');
 svgObject?.addEventListener('load', onSvgLoad, false);
 
+var svgPlane1: any = document.getElementById('plane1');
+var svgPlane2: any = document.getElementById('plane2');
+var svgPlane3: any = document.getElementById('plane3');
+
 function determineSvgSize() {
   // calculate best fit for svg
   let width: number = getWidth();
@@ -27,6 +31,17 @@ function determineSvgSize() {
   virusMapElement.style.height = `${calcHeight}px`;
 
   console.log('svg size determined');
+
+  //planes
+  let planeWidth = width * 0.03;
+  let planeHeight = height * 0.03;
+  svgPlane1.style.width = `${planeWidth}px`;
+  svgPlane1.style.height = `${planeHeight}px`;
+  svgPlane2.style.width = `${planeWidth}px`;
+  svgPlane2.style.height = `${planeHeight}px`;
+  svgPlane3.style.width = `${planeWidth}px`;
+  svgPlane3.style.height = `${planeHeight}px`;
+  placePlanes();
 }
 
 async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number, rows: number) {
@@ -95,4 +110,8 @@ function getCountry(x, y) {
   // // let pointInGermany = worldSvg.ownerDocument.elementFromPoint(e.x, e.y) == de;
   // let country = path.getAttribute("name") ?? path.className.baseVal ?? path.id;
   // console.log(country == "" ? "Sea" : country);
+}
+
+function placePlanes() {
+  var airportUSA1;
 }
