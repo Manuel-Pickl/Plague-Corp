@@ -1,6 +1,6 @@
 const maxFramerate = 15;
 const maxHudFramerate = maxFramerate;
-const virusWidth = 3;
+const virusWidth = 5;
 const virusHeight = virusWidth;
 const spawnProbability = 0.001;
 const brushSizeMin = 1;

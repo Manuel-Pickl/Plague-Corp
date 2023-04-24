@@ -32,7 +32,7 @@ function determineSvgSize() {
     virusMapElement.style.width = `${calcWidth}px`;
     virusMapElement.style.height = `${calcHeight}px`;
     console.log('svg size determined');
-    //planes
+    /*//planes
     let planeWidth = width * 0.03;
     let planeHeight = height * 0.03;
     svgPlane1.style.width = `${planeWidth}px`;
@@ -40,8 +40,7 @@ function determineSvgSize() {
     svgPlane2.style.width = `${planeWidth}px`;
     svgPlane2.style.height = `${planeHeight}px`;
     svgPlane3.style.width = `${planeWidth}px`;
-    svgPlane3.style.height = `${planeHeight}px`;
-    placePlanes();
+    svgPlane3.style.height = `${planeHeight}px`;*/
 }
 function preprocessWorldSvg(worldSvgElement, columns, rows) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -58,6 +57,8 @@ function preprocessWorldSvg(worldSvgElement, columns, rows) {
                 if (ctx) {
                     ctx.drawImage(svgImage, 0, 0, parseInt(svgObject.style.width), parseInt(svgObject.style.height));
                 }
+                //svg muss schon geladen worden sein
+                placePlanes(ctx);
                 for (let row = 0; row < rows; row++) {
                     for (let column = 0; column < columns; column++) {
                         let positionX = column * virusWidth;
@@ -95,7 +96,21 @@ function getCountry(x, y) {
     // let country = path.getAttribute("name") ?? path.className.baseVal ?? path.id;
     // console.log(country == "" ? "Sea" : country);
 }
-function placePlanes() {
-    var airportUSA1;
+function placePlanes(ctx) {
+    var svgContent = svgObject.contentDocument;
+    var airportAustraliaNorth = svgContent.getElementById('FH-AustralienNord');
+    var x_coord = airportAustraliaNorth.getAttribute('cx') * 0.5;
+    var y_coord = airportAustraliaNorth.getAttribute('cy') * 0.5;
+    svgPlane1.style.width = `20px`;
+    svgPlane1.style.height = `20px`;
+    svgPlane1.style.transform = `translate(${x_coord}px,${y_coord}px)`;
+    //TODO: Richtiges Koordinatensystem dafür verwenden
+    /*var img = new Image();
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0);
+      console.log('Planes loaded');
+    };
+    img.src = '/assets/airplane.svg';*/
+    //svgPlane1.style.transform = 'translate(x_coord, y_coord)';
 }
 //# sourceMappingURL=svgHelper.js.map
