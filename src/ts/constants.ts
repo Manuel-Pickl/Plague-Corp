@@ -14,6 +14,8 @@ const minPopulationMax = 4;
 const overPopulationMin = 1;
 const overPopulationMax = 7;
 
+const degreeOfPlaneImage = 45;
+
 // debug
 const debugMode: boolean = true;
 const logCyclus: boolean = false;

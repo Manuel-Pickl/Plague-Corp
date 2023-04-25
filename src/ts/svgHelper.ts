@@ -87,8 +87,8 @@ async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number,
           parseInt(svgObject.style.height)
         );
       }
-      //svg must have been loaded
-      placePlanes(ctx);
+      
+      placePlanes();
 
       for (let row = 0; row < rows; row++) {
         for (let column = 0; column < columns; column++) {
@@ -124,21 +124,8 @@ async function createSeaMatrix() {
   return preprocessWorldSvg(worldSvg, virusColumns, virusRows);
 }
 
-function getCountry(x, y) {
-  // let path = worldSvg.ownerDocument.elementFromPoint(x, y);
-  // // console.log(path);
-  // // let pointInGermany = worldSvg.ownerDocument.elementFromPoint(e.x, e.y) == de;
-  // let country = path.getAttribute("name") ?? path.className.baseVal ?? path.id;
-  // console.log(country == "" ? "Sea" : country);
-}
-
-function placePlanes(ctx) {
-  var svgContent = svgObject.contentDocument;
-
-  var airportAustraliaWest = svgContent.getElementById('FH-AustralienWest');
-  const { x: x1, y: y1 } = airportAustraliaWest.getBoundingClientRect();
-
-  const flight_intervall = setInterval(function () {
+function placePlanes() {
+  setInterval(() => {
     if (!flightEnabled) {
       return;
     }
@@ -155,10 +142,8 @@ function getDegreeBetweenPoints(x1, y1, x2, y2) {
   const radians = Math.atan2(deltaY, deltaX);
   const degrees = radians * (180 / Math.PI);
 
-  return (degrees + 360 + 90) % 360;
+  return (degrees + 360) % 360;
 }
-
-function movePlane(x1, y1, x2, y2) {}
 
 function initiateFlight(airports) {
   let svgContent = svgObject.contentDocument;
@@ -169,42 +154,42 @@ function initiateFlight(airports) {
   const { x: destinationX, y: destinationY } = airportDestination.getBoundingClientRect();
 
   //getPlaneRotation
-  let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY);
+  let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) + degreeOfPlaneImage;
 
   //get flight time
   let distance = distanceBetweenPoints(sourceX, sourceY, destinationX, destinationY);
   let flightTime = calculateTime(distance, 15);
+  
+  let isAirportInfectedOnStart = isAirportInfected(airports);
 
   //set values for planes
-  let plane = document.createElement('object');
+  let plane = document.createElement('img');
   plane.classList.add('airplane');
-  plane.id = 'plane1';
-  plane.data = 'assets/airplane.svg';
 
-  plane.style.transition = `${flightTime}s`;
-  plane.style.width = `20px`;
-  plane.style.height = `20px`;
+  plane.src = isAirportInfectedOnStart
+    ? 'assets/airplane_infected.png'
+    : 'assets/airplane.png';
+  
+  plane.style.transitionDuration = `${flightTime}s`;
   plane.style.left = `${sourceX}px`;
   plane.style.top = `${sourceY}px`;
   plane.style.rotate = `${degree}deg`;
   document.getElementById('virusMap').append(plane);
-  if (isAirportInfected(airports)) {
-    plane.style.color = 'red';
-    plane.style.fill = 'red';
-  }
 
-  plane.style.left = `${destinationX}px`;
-  plane.style.top = `${destinationY}px`;
+  setTimeout(() => {
+    plane.style.left = `${destinationX}px`;
+    plane.style.top = `${destinationY}px`;
+  }, 100);
 
-  //remove html plane after flight is over
   setTimeout(() => {
     //spread virus on flight destination
-    if (isAirportInfected(airports)) {
+    if (isAirportInfectedOnStart) {
       let tileX = getMatrixRowByX(destinationX);
       let tileY = getMatrixColoumByY(destinationY);
       let virusTile = document.getElementById(`${tileX}-${tileY}`);
       spreadVirus(virusTile, 4);
     }
+    //remove html plane after flight is over
     plane.remove();
   }, flightTime * 1000 + 200);
 }
