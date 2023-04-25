@@ -65,3 +65,12 @@
 .healthyCount {
   inset: 60px 10px auto auto;
 }
+
+
+
+.logo {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: 300px;
+}
