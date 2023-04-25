@@ -1,5 +1,4 @@
-const maxFramerate: number = 15;
-const maxHudFramerate: number = maxFramerate;
+const maxHudFramerate: number = 20;
 
 const virusWidth: number = 7;
 const virusHeight: number = virusWidth;

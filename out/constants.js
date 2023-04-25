@@ -1,5 +1,4 @@
-const maxFramerate = 15;
-const maxHudFramerate = maxFramerate;
+const maxHudFramerate = 20;
 const virusWidth = 7;
 const virusHeight = virusWidth;
 const spawnProbability = 0.001;

@@ -1,3 +1,5 @@
+var maxFramerate: number = 15;
+
 // intervals
 var simulationInterval: any;
 var hudInterval: any;
@@ -11,8 +13,8 @@ var virusColumns: number;
 var virusRows: number;
 var mouseIsDown: boolean = false;
 
-var airplanes = [];
-var flightIntervals = [];
+var airplanes: HTMLElement[] = [];
+var flightIntervals: number[] = [];
 
 // hud
 var cycleCount: number = 0;

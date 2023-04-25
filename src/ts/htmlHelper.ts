@@ -2,7 +2,12 @@
 var worldSvgElement: SVGElement;
 var virusMapElement: HTMLElement;
 
-var cycleCounterElement: HTMLElement;
+
+
+// left side
+var framerateValueElement: HTMLElement;
+var increaseFramerateElement: HTMLElement;
+var decreaseFramerateElement: HTMLElement;
 
 var flightEnabledElement: HTMLElement;
 
@@ -20,8 +25,14 @@ var overPopulationElement: HTMLElement;
 var increaseOverPopulationElement: HTMLElement;
 var decreaseOverPopulationElement: HTMLElement;
 
+
+
+// right side
+var cycleCounterElement: HTMLElement;
 var infectedCountElement: HTMLElement;
 var healthyCountElement: HTMLElement;
+
+
 
 function assignHtmlVariables() {
     worldSvgElement = svgObject.contentDocument.querySelector("svg");
@@ -31,22 +42,26 @@ function assignHtmlVariables() {
     infectedCountElement = document.querySelector(".infectedCount span");
     healthyCountElement = document.querySelector(".healthyCount span");
 
+    framerateValueElement = document.querySelector(".framerate #framerateValue");
+    decreaseFramerateElement = document.querySelector(".framerate #decreaseFramerate");
+    increaseFramerateElement = document.querySelector(".framerate #increaseFramerate");
+
     flightEnabledElement = document.querySelector(".enableFlights");
 
     brushSymbol = document.querySelector(".brush .brushSymbol");
     brushFillElement = document.querySelector(".brush .hexagonFill");
     brushSizeElement = document.querySelector(".brush #brushSize");
 
-    increaseBrushSizeElement = document.querySelector(".brush #increaseBrushSize")
     decreaseBrushSizeElement = document.querySelector(".brush #decreaseBrushSize");
+    increaseBrushSizeElement = document.querySelector(".brush #increaseBrushSize")
     
     minPopulationElement = document.querySelector(".minPopulation #minPopulation");
-    increaseMinPopulationElement = document.querySelector(".minPopulation #increaseMinPopulation");
     decreaseMinPopulationElement = document.querySelector(".minPopulation #decreaseMinPopulation");
+    increaseMinPopulationElement = document.querySelector(".minPopulation #increaseMinPopulation");
     
     overPopulationElement = document.querySelector(".overPopulation #overPopulation");
-    increaseOverPopulationElement = document.querySelector(".overPopulation #increaseOverPopulation");
     decreaseOverPopulationElement = document.querySelector(".overPopulation #decreaseOverPopulation");
+    increaseOverPopulationElement = document.querySelector(".overPopulation #increaseOverPopulation");
 }
 
 function assignHtmlEvents() {
@@ -61,9 +76,28 @@ function assignHtmlEvents() {
         airplanes.forEach(airplane => airplane.remove());
         flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
     }
+    assignFramerateEvents();
     assignBrushEvents();
     assignMinPopulationEvents();
     assignoverPopulationEvents();
+}
+
+function assignFramerateEvents() {
+    decreaseFramerateElement.onclick = () => {
+        if (maxFramerate > 1) maxFramerate--;
+        framerateValueElement.innerText = maxFramerate.toString();
+
+        clearInterval(simulationInterval);
+        simulationInterval = setInterval(draw, 1000 / maxFramerate);
+    };
+
+    increaseFramerateElement.onclick = () => {
+        maxFramerate++;
+        framerateValueElement.innerText = maxFramerate.toString();
+
+        clearInterval(simulationInterval);
+        simulationInterval = setInterval(draw, 1000 / maxFramerate);
+    };
 }
 
 function assignBrushEvents() {
@@ -108,6 +142,7 @@ function assignoverPopulationEvents() {
 }
 
 function initializeHtmlElements() {
+    framerateValueElement.innerText = maxFramerate.toString();
     flightEnabledElement.querySelector("i").style.color = flightEnabled ? "green" : "red";
     brushSizeElement.innerText = brushSize.toString();
     minPopulationElement.innerText = minPopulation.toString();

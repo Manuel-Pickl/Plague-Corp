@@ -13,7 +13,10 @@
   gap: 5px;
 }
 
-.cycleCounter {
+
+
+/* right side */
+.framerate {
   inset: 10px auto auto 10px;
 }
 
@@ -58,12 +61,17 @@
 
 
 
-.infectedCount {
+/* right side */
+.cycleCounter {
   inset: 10px 10px auto auto;
 }
 
-.healthyCount {
+.infectedCount {
   inset: 60px 10px auto auto;
+}
+
+.healthyCount {
+  inset: 110px 10px auto auto;
 }
 
 
