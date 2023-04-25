@@ -17,6 +17,8 @@ var seaMatrix;
 var virusColumns;
 var virusRows;
 var mouseIsDown = false;
+var airplanes = [];
+var flightIntervals = [];
 // hud
 var cycleCount = 0;
 var brushFill = true;

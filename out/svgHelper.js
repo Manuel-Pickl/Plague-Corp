@@ -147,11 +147,18 @@ function initiateFlight(airports) {
     plane.style.top = `${sourceY}px`;
     plane.style.rotate = `${degree}deg`;
     document.getElementById('virusMap').append(plane);
-    setTimeout(() => {
+    let flightInterval = setTimeout(() => {
         plane.style.left = `${destinationX}px`;
         plane.style.top = `${destinationY}px`;
     }, 100);
+    // keep for later deletion on disable
+    airplanes.push(plane);
+    flightIntervals.push(flightInterval);
     setTimeout(() => {
+        // skip infection if plane was removed before
+        if (!document.body.contains(plane)) {
+            return;
+        }
         //spread virus on flight destination
         if (isAirportInfectedOnStart) {
             let tileX = getMatrixRowByX(destinationX);

@@ -11,6 +11,9 @@ var virusColumns: number;
 var virusRows: number;
 var mouseIsDown: boolean = false;
 
+var airplanes = [];
+var flightIntervals = [];
+
 // hud
 var cycleCount: number = 0;
 var brushFill: boolean = true;

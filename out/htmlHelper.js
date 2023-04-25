@@ -2,6 +2,7 @@
 var worldSvgElement;
 var virusMapElement;
 var cycleCounterElement;
+var flightEnabledElement;
 var brushSymbol;
 var brushFillElement;
 var brushSizeElement;
@@ -21,6 +22,7 @@ function assignHtmlVariables() {
     cycleCounterElement = document.querySelector(".cycleCounter span");
     infectedCountElement = document.querySelector(".infectedCount span");
     healthyCountElement = document.querySelector(".healthyCount span");
+    flightEnabledElement = document.querySelector(".enableFlights");
     brushSymbol = document.querySelector(".brush .brushSymbol");
     brushFillElement = document.querySelector(".brush .hexagonFill");
     brushSizeElement = document.querySelector(".brush #brushSize");
@@ -34,6 +36,15 @@ function assignHtmlVariables() {
     decreaseOverPopulationElement = document.querySelector(".overPopulation #decreaseOverPopulation");
 }
 function assignHtmlEvents() {
+    flightEnabledElement.onclick = () => {
+        flightEnabled = !flightEnabled;
+        flightEnabledElement.querySelector("i").style.color = flightEnabled ? "green" : "red";
+        if (flightEnabled) {
+            return;
+        }
+        airplanes.forEach(airplane => airplane.remove());
+        flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+    };
     assignBrushEvents();
     assignMinPopulationEvents();
     assignoverPopulationEvents();
@@ -79,6 +90,7 @@ function assignoverPopulationEvents() {
     };
 }
 function initializeHtmlElements() {
+    flightEnabledElement.querySelector("i").style.color = flightEnabled ? "green" : "red";
     brushSizeElement.innerText = brushSize.toString();
     minPopulationElement.innerText = minPopulation.toString();
     overPopulationElement.innerText = overPopulation.toString();

@@ -17,6 +17,10 @@
   inset: 10px auto auto 10px;
 }
 
+.enableFlights {
+  inset: 60px auto auto 10px;
+}
+
 .brushSymbol {
   position: relative;
   width: 26px;
@@ -41,16 +45,18 @@
 }
 
 .brush {
-  inset: 60px auto auto 10px;
-}
-
-.minPopulation {
   inset: 110px auto auto 10px;
 }
 
-.overPopulation {
+.minPopulation {
   inset: 160px auto auto 10px;
 }
+
+.overPopulation {
+  inset: 210px auto auto 10px;
+}
+
+
 
 .infectedCount {
   inset: 10px 10px auto auto;
