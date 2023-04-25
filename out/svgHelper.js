@@ -12,6 +12,33 @@ svgObject === null || svgObject === void 0 ? void 0 : svgObject.addEventListener
 var svgPlane1 = document.getElementById('plane1');
 var svgPlane2 = document.getElementById('plane2');
 var svgPlane3 = document.getElementById('plane3');
+const airportNeighbours = {
+    'FH-AfrikaOst': ['FH-Madagaska'],
+    'FH-Madagaska': ['FH-AfrikaOst'],
+    'FH-Brasilien': ['FH-AfrikaSued', 'FH-Kolumbien'],
+    'FH-AfrikaSued': ['FH-Brasilien'],
+    'FH-Kolumbien': ['FH-Mexiko', 'FH-USASued', 'FH-Protugal'],
+    'FH-Mexiko': ['FH-USAWest', 'FH-Kolumbien'],
+    'FH-USAWest': ['FH-USANord', 'FH-Mexiko'],
+    'FH-USASued': ['FH-USANord', 'FH-Kolumbien'],
+    'FH-USANord': ['FH-Canada', 'FH-England', 'FH-USASued', 'FH-USAWest'],
+    'FH-Canada': ['FH-USANord', 'FH-Groenland'],
+    'FH-Protugal': ['FH-England', 'FH-Kolumbien'],
+    'FH-England': ['FH-Deutschland', 'FH-Egypt', 'FH-Protugal', 'FH-USANord', 'FH-Groenland'],
+    'FH-Deutschland': ['FH-England'],
+    'FH-Egypt': ['FH-SaudiArabien', 'FH-England'],
+    'FH-SaudiArabien': ['FH-Idien', 'FH-Egypt'],
+    'FH-Idien': ['FH-Thailand', 'FH-SaudiArabien'],
+    'FH-Thailand': ['FH-China', 'FH-Indonesien', 'FH-Idien'],
+    'FH-China': ['FH-Thailand', 'FH-Japan'],
+    'FH-Japan': ['FH-Papua', 'FH-China'],
+    'FH-Papua': ['FH-AustralienNord', 'FH-AustralienOst', 'FH-Japan'],
+    'FH-AustralienNord': ['FH-Papua'],
+    'FH-AustralienOst': ['FH-Papua'],
+    'FH-Indonesien': ['FH-AustralienWest', 'FH-Thailand'],
+    'FH-AustralienWest': ['FH-Indonesien'],
+    'FH-Groenland': ['FH-Canada', 'FH-England'],
+};
 function determineSvgSize() {
     // calculate best fit for svg
     let width = getWidth();
@@ -98,19 +125,56 @@ function getCountry(x, y) {
 }
 function placePlanes(ctx) {
     var svgContent = svgObject.contentDocument;
-    var airportAustraliaNorth = svgContent.getElementById('FH-AustralienNord');
-    var x_coord = airportAustraliaNorth.getAttribute('cx') * 0.5;
-    var y_coord = airportAustraliaNorth.getAttribute('cy') * 0.5;
-    svgPlane1.style.width = `20px`;
-    svgPlane1.style.height = `20px`;
-    svgPlane1.style.transform = `translate(${x_coord}px,${y_coord}px)`;
-    //TODO: Richtiges Koordinatensystem dafür verwenden
-    /*var img = new Image();
-    img.onload = function () {
-      ctx.drawImage(img, 0, 0);
-      console.log('Planes loaded');
-    };
-    img.src = '/assets/airplane.svg';*/
-    //svgPlane1.style.transform = 'translate(x_coord, y_coord)';
+    var airportAustraliaWest = svgContent.getElementById('FH-AustralienWest');
+    const { x: x1, y: y1 } = airportAustraliaWest.getBoundingClientRect();
+    const flight_intervall = setInterval(function () {
+        if (!flightEnabled) {
+            return;
+        }
+        if (Math.random() > 0.1) {
+            var Airports = selectRandomAirports();
+            initiateFlight(Airports);
+        }
+    }, 1000);
+}
+function getDegreeBetweenPoints(x1, y1, x2, y2) {
+    const deltaX = x2 - x1;
+    const deltaY = y2 - y1;
+    const radians = Math.atan2(deltaY, deltaX);
+    const degrees = radians * (180 / Math.PI);
+    return (degrees + 360 + 90) % 360;
+}
+function movePlane(x1, y1, x2, y2) { }
+function initiateFlight(airports) {
+    let svgContent = svgObject.contentDocument;
+    var airportSource = svgContent.getElementById(airports.source);
+    const { x: sourceX, y: sourceY } = airportSource.getBoundingClientRect();
+    var airportDestination = svgContent.getElementById(airports.destination);
+    const { x: destinationX, y: destinationY } = airportDestination.getBoundingClientRect();
+    //getPlaneRotation
+    let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY);
+    //set values for planes
+    let plane = document.createElement('object');
+    plane.classList.add('airplane');
+    plane.id = 'plane1';
+    plane.data = 'assets/airplane.svg';
+    plane.style.width = `20px`;
+    plane.style.height = `20px`;
+    plane.style.left = `${sourceX}px`;
+    plane.style.top = `${sourceY}px`;
+    plane.style.rotate = `${degree}deg`;
+    document.getElementById('virusMap').append(plane);
+    plane.style.left = `${destinationX}px`;
+    plane.style.top = `${destinationY}px`;
+}
+function selectRandomAirports() {
+    let maxValue = Object.keys(airportNeighbours).length;
+    let randomAirportNumber = Math.floor(Math.random() * maxValue);
+    let airportName = Object.keys(airportNeighbours)[randomAirportNumber];
+    return { source: airportName, destination: getRandomElement(airportNeighbours[airportName]) };
+}
+function getRandomElement(arr) {
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
 }
 //# sourceMappingURL=svgHelper.js.map

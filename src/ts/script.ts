@@ -17,6 +17,7 @@ var brushFill: boolean = true;
 var brushSize: number = 1;
 var minPopulation: number = 1;
 var overPopulation: number = 7;
+var flightEnabled: boolean = true;
 
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;

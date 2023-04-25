@@ -23,6 +23,7 @@ var brushFill = true;
 var brushSize = 1;
 var minPopulation = 1;
 var overPopulation = 7;
+var flightEnabled = true;
 var possibleVirusCount = 0;
 var infectedCount = 0;
 function onSvgLoad() {

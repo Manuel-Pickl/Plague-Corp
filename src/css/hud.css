@@ -1,65 +1,63 @@
 .hudElement {
-    position: absolute;
-    padding: 5px 10px;
+  position: absolute;
+  padding: 5px 10px;
 
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 
-    color: white;
-    background-color: lightgray;
-    border-radius: 30px;
+  color: white;
+  background-color: lightgray;
+  border-radius: 30px;
 
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  visibility: hidden;
 }
 
-
-
 .cycleCounter {
-    inset: 10px auto auto 10px;
+  inset: 10px auto auto 10px;
 }
 
 .brushSymbol {
-    position: relative;
-    width: 26px;
-    height: 26px;
+  position: relative;
+  width: 26px;
+  height: 26px;
 }
 .hexagonStroke {
-    position: absolute;
-    inset: 0;
+  position: absolute;
+  inset: 0;
 
-    background-color: white;
-    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+  background-color: white;
+  clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
 }
 
 .hexagonFill {
-    position: absolute;
-    inset: 0;
-    
-    background-color: lightgray;
-    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-    scale: 70%;
-    visibility: hidden;
+  position: absolute;
+  inset: 0;
+
+  background-color: lightgray;
+  clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+  scale: 70%;
+  visibility: hidden;
 }
 
 .brush {
-    inset: 60px auto auto 10px;
+  inset: 60px auto auto 10px;
 }
 
 .minPopulation {
-    inset: 110px auto auto 10px;
+  inset: 110px auto auto 10px;
 }
 
 .overPopulation {
-    inset: 160px auto auto 10px;
+  inset: 160px auto auto 10px;
 }
 
-
-
 .infectedCount {
-    inset: 10px 10px auto auto;
+  inset: 10px 10px auto auto;
 }
 
 .healthyCount {
-    inset: 60px 10px auto auto;
+  inset: 60px 10px auto auto;
 }
