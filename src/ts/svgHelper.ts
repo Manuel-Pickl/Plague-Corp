@@ -87,7 +87,7 @@ async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number,
           parseInt(svgObject.style.height)
         );
       }
-      //svg muss schon geladen worden sein
+      //svg must have been loaded
       placePlanes(ctx);
 
       for (let row = 0; row < rows; row++) {
@@ -190,6 +190,7 @@ function initiateFlight(airports) {
   document.getElementById('virusMap').append(plane);
   if (isAirportInfected(airports)) {
     plane.style.color = 'red';
+    plane.style.fill = 'red';
   }
 
   plane.style.left = `${destinationX}px`;
@@ -202,7 +203,7 @@ function initiateFlight(airports) {
       let tileX = getMatrixRowByX(destinationX);
       let tileY = getMatrixColoumByY(destinationY);
       let virusTile = document.getElementById(`${tileX}-${tileY}`);
-      spreadVirus(virusTile);
+      spreadVirus(virusTile, 4);
     }
     plane.remove();
   }, flightTime * 1000 + 200);
@@ -243,27 +244,6 @@ function isAirportInfected(airport) {
   if (virusMatrix[tileX][tileY] == 1) {
     return true;
   } else return false;
-}
-
-//TODO: Duplicate in scripct.ts ! Fix it
-function spreadVirus(virus) {
-  // determine column and column of clicked virus tile
-  let column = parseInt(virus.id.split('-')[0]);
-  let row = parseInt(virus.id.split('-')[1]);
-
-  // get all relevant virus tiles
-  let virusTiles = new Array<[number, number]>();
-  virusTiles.push([column, row]); // virus tile on mouse point
-  getNeighbors(column, row, 3).forEach(neighbor => virusTiles.push(neighbor)); // all neighboring virus tiles
-
-  // enable all virus tiles that are not in the sea
-  virusTiles.forEach(neighbor => {
-    if (pointInSea(neighbor[0], neighbor[1])) return;
-    virusMatrix[neighbor[0]][neighbor[1]] = 1;
-
-    // we can already make the tile visible, but it's functionality/spreading only starts on next frame
-    document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
-  });
 }
 
 function getMatrixRowByX(x) {

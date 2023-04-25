@@ -175,13 +175,21 @@ function placeVirus(e) {
     let virus = e.target;
     if (!virus.classList.contains('virus'))
         return;
+    spreadVirus(virus, brushSize);
+}
+function updateHud() {
+    cycleCounterElement.innerText = cycleCount.toString();
+    infectedCountElement.innerText = infectedCount.toString();
+    healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
+}
+function spreadVirus(virus, brush) {
     // determine column and column of clicked virus tile
     let column = parseInt(virus.id.split('-')[0]);
     let row = parseInt(virus.id.split('-')[1]);
     // get all relevant virus tiles
     let virusTiles = new Array();
     virusTiles.push([column, row]); // virus tile on mouse point
-    getNeighbors(column, row, brushSize - 1).forEach(neighbor => virusTiles.push(neighbor)); // all neighboring virus tiles
+    getNeighbors(column, row, brush - 1).forEach(neighbor => virusTiles.push(neighbor)); // all neighboring virus tiles
     // enable all virus tiles that are not in the sea
     virusTiles.forEach(neighbor => {
         if (pointInSea(neighbor[0], neighbor[1]))
@@ -190,10 +198,5 @@ function placeVirus(e) {
         // we can already make the tile visible, but it's functionality/spreading only starts on next frame
         document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
     });
-}
-function updateHud() {
-    cycleCounterElement.innerText = cycleCount.toString();
-    infectedCountElement.innerText = infectedCount.toString();
-    healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }
 //# sourceMappingURL=script.js.map
