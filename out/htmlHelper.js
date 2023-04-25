@@ -5,6 +5,7 @@ var virusMapElement;
 var framerateValueElement;
 var increaseFramerateElement;
 var decreaseFramerateElement;
+var pauseSimulationElement;
 var flightEnabledElement;
 var brushSymbol;
 var brushFillElement;
@@ -27,6 +28,7 @@ function assignHtmlVariables() {
     cycleCounterElement = document.querySelector(".cycleCounter span");
     infectedCountElement = document.querySelector(".infectedCount span");
     healthyCountElement = document.querySelector(".healthyCount span");
+    pauseSimulationElement = document.querySelector(".pauseSimulation");
     framerateValueElement = document.querySelector(".framerate #framerateValue");
     decreaseFramerateElement = document.querySelector(".framerate #decreaseFramerate");
     increaseFramerateElement = document.querySelector(".framerate #increaseFramerate");
@@ -44,6 +46,14 @@ function assignHtmlVariables() {
     increaseOverPopulationElement = document.querySelector(".overPopulation #increaseOverPopulation");
 }
 function assignHtmlEvents() {
+    assignEnableFlightEvents();
+    assignPauseSimulationEvents();
+    assignFramerateEvents();
+    assignBrushEvents();
+    assignMinPopulationEvents();
+    assignoverPopulationEvents();
+}
+function assignEnableFlightEvents() {
     flightEnabledElement.onclick = () => {
         flightEnabled = !flightEnabled;
         flightEnabledElement.querySelector("i").style.color = flightEnabled ? "green" : "red";
@@ -53,10 +63,14 @@ function assignHtmlEvents() {
         airplanes.forEach(airplane => airplane.remove());
         flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
     };
-    assignFramerateEvents();
-    assignBrushEvents();
-    assignMinPopulationEvents();
-    assignoverPopulationEvents();
+}
+function assignPauseSimulationEvents() {
+    pauseSimulationElement.onclick = () => {
+        simulationPaused = !simulationPaused;
+        pauseSimulationElement.innerHTML = simulationPaused
+            ? '<i class="fa-solid fa-play"></i>'
+            : '<i class="fa-solid fa-pause"></i>';
+    };
 }
 function assignFramerateEvents() {
     decreaseFramerateElement.onclick = () => {
@@ -114,6 +128,9 @@ function assignoverPopulationEvents() {
     };
 }
 function initializeHtmlElements() {
+    pauseSimulationElement.innerHTML = simulationPaused
+        ? '<i class="fa-solid fa-play"></i>'
+        : '<i class="fa-solid fa-pause"></i>';
     framerateValueElement.innerText = maxFramerate.toString();
     flightEnabledElement.querySelector("i").style.color = flightEnabled ? "green" : "red";
     brushSizeElement.innerText = brushSize.toString();

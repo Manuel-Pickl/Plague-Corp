@@ -20,6 +20,7 @@ var virusRows;
 var mouseIsDown = false;
 var airplanes = [];
 var flightIntervals = [];
+var simulationPaused = false;
 // hud
 var cycleCount = 0;
 var brushFill = true;
@@ -106,6 +107,9 @@ function createVirusMatrix() {
     }
 }
 function draw() {
+    if (simulationPaused) {
+        return;
+    }
     cycleCount++;
     for (let row = 0; row < virusRows; row++) {
         for (let column = 0; column < virusColumns; column++) {

@@ -23,48 +23,56 @@
     <div id="virusMap"></div>
 
     <!-- hud -->
-    <div class="hudElement framerate">
-      <i class="fa-solid fa-gauge-high"></i>
-      <span id="decreaseFramerate">-</span>
-      <span id="framerateValue">-1</span>
-      <span id="increaseFramerate">+</span>
-    </div>
-    <div class="hudElement cycleCounter">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <span>0</span>
-    </div>
-    <div class="hudElement enableFlights">
-      <i class="fa-solid fa-plane"></i>
-    </div>
-    <div class="hudElement brush">
-      <div class="brushSymbol">
-        <div class="hexagonStroke"></div>
-        <div class="hexagonFill"></div>
+    <div class="hud hud-left">
+      <div class="hudElement framerate">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span id="decreaseFramerate">-</span>
+        <span id="framerateValue">-1</span>
+        <span id="increaseFramerate">+</span>
       </div>
-      <span id="decreaseBrushSize">-</span>
-      <span id="brushSize">-1</span>
-      <span id="increaseBrushSize">+</span>
+      <div class="hudElement simulation">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        <div class="pauseSimulation"></div>
+        <i class="fa-solid fa-arrow-rotate-right"></i>
+      </div>
+      <div class="hudElement enableFlights">
+        <i class="fa-solid fa-plane"></i>
+      </div>
+      <div class="hudElement brush">
+        <div class="brushSymbol">
+          <div class="hexagonStroke"></div>
+          <div class="hexagonFill"></div>
+        </div>
+        <span id="decreaseBrushSize">-</span>
+        <span id="brushSize">-1</span>
+        <span id="increaseBrushSize">+</span>
+      </div>
+      <div class="hudElement minPopulation">
+        <i class="fa-solid fa-user"></i>
+        <span id="decreaseMinPopulation">-</span>
+        <span id="minPopulation">-1</span>
+        <span id="increaseMinPopulation">+</span>
+      </div>
+      <div class="hudElement overPopulation">
+        <i class="fa-solid fa-user-group"></i>
+        <span id="decreaseOverPopulation">-</span>
+        <span id="overPopulation">-1</span>
+        <span id="increaseOverPopulation">+</span>
+      </div>
     </div>
-    <div class="hudElement minPopulation">
-      <i class="fa-solid fa-user"></i>
-      <span id="decreaseMinPopulation">-</span>
-      <span id="minPopulation">-1</span>
-      <span id="increaseMinPopulation">+</span>
-    </div>
-    <div class="hudElement overPopulation">
-      <i class="fa-solid fa-user-group"></i>
-      <span id="decreaseOverPopulation">-</span>
-      <span id="overPopulation">-1</span>
-      <span id="increaseOverPopulation">+</span>
-    </div>
-
-    <div class="hudElement infectedCount">
-      <i class="fa-solid fa-viruses"></i>
-      <span>0</span>
-    </div>
-    <div class="hudElement healthyCount">
-      <i class="fa-solid fa-heart-pulse"></i>
-      <span>0</span>
+    <div class="hud hud-right">
+      <div class="hudElement cycleCounter">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>0</span>
+      </div>
+      <div class="hudElement infectedCount">
+        <i class="fa-solid fa-viruses"></i>
+        <span>0</span>
+      </div>
+      <div class="hudElement healthyCount">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>0</span>
+      </div>
     </div>
 
     <img class="logo" src="assets/logo.png" alt="assets/logo.png">

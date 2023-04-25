@@ -1,6 +1,20 @@
-.hudElement {
+.hud {
   position: absolute;
-  padding: 5px 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hud-left {
+  left: 10px;
+}
+.hud-right {
+  right: 10px;
+}
+
+.hudElement {
+  height: 40px;
+  padding-inline: 13px;
 
   font-size: 1.5rem;
 
@@ -13,16 +27,6 @@
   gap: 5px;
 }
 
-
-
-/* right side */
-.framerate {
-  inset: 10px auto auto 10px;
-}
-
-.enableFlights {
-  inset: 60px auto auto 10px;
-}
 
 .brushSymbol {
   position: relative;
@@ -45,33 +49,6 @@
   clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
   scale: 70%;
   visibility: hidden;
-}
-
-.brush {
-  inset: 110px auto auto 10px;
-}
-
-.minPopulation {
-  inset: 160px auto auto 10px;
-}
-
-.overPopulation {
-  inset: 210px auto auto 10px;
-}
-
-
-
-/* right side */
-.cycleCounter {
-  inset: 10px 10px auto auto;
-}
-
-.infectedCount {
-  inset: 60px 10px auto auto;
-}
-
-.healthyCount {
-  inset: 110px 10px auto auto;
 }
 
 
