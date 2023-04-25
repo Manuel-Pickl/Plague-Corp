@@ -22,5 +22,4 @@ svg {
   translate: -50% -50%;
   transition-property: all;
   transition-timing-function: ease;
-  transition: 10s;
 }

@@ -59,16 +59,6 @@ function determineSvgSize() {
   virusMapElement.style.height = `${calcHeight}px`;
 
   console.log('svg size determined');
-
-  /*//planes
-  let planeWidth = width * 0.03;
-  let planeHeight = height * 0.03;
-  svgPlane1.style.width = `${planeWidth}px`;
-  svgPlane1.style.height = `${planeHeight}px`;
-  svgPlane2.style.width = `${planeWidth}px`;
-  svgPlane2.style.height = `${planeHeight}px`;
-  svgPlane3.style.width = `${planeWidth}px`;
-  svgPlane3.style.height = `${planeHeight}px`;*/
 }
 
 async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number, rows: number) {
@@ -181,21 +171,41 @@ function initiateFlight(airports) {
   //getPlaneRotation
   let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY);
 
+  //get flight time
+  let distance = distanceBetweenPoints(sourceX, sourceY, destinationX, destinationY);
+  let flightTime = calculateTime(distance, 15);
+
   //set values for planes
   let plane = document.createElement('object');
   plane.classList.add('airplane');
   plane.id = 'plane1';
   plane.data = 'assets/airplane.svg';
 
+  plane.style.transition = `${flightTime}s`;
   plane.style.width = `20px`;
   plane.style.height = `20px`;
   plane.style.left = `${sourceX}px`;
   plane.style.top = `${sourceY}px`;
   plane.style.rotate = `${degree}deg`;
   document.getElementById('virusMap').append(plane);
+  if (isAirportInfected(airports)) {
+    plane.style.color = 'red';
+  }
 
   plane.style.left = `${destinationX}px`;
   plane.style.top = `${destinationY}px`;
+
+  //remove html plane after flight is over
+  setTimeout(() => {
+    //spread virus on flight destination
+    if (isAirportInfected(airports)) {
+      let tileX = getMatrixRowByX(destinationX);
+      let tileY = getMatrixColoumByY(destinationY);
+      let virusTile = document.getElementById(`${tileX}-${tileY}`);
+      spreadVirus(virusTile);
+    }
+    plane.remove();
+  }, flightTime * 1000 + 200);
 }
 
 function selectRandomAirports() {
@@ -209,4 +219,57 @@ function selectRandomAirports() {
 function getRandomElement(arr) {
   const randomIndex = Math.floor(Math.random() * arr.length);
   return arr[randomIndex];
+}
+
+function distanceBetweenPoints(x1, y1, x2, y2) {
+  const deltaX = x2 - x1;
+  const deltaY = y2 - y1;
+  return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+}
+
+function calculateTime(distance, speed) {
+  // Speed should be in the same unit as distance per second.
+  return distance / speed;
+}
+
+function isAirportInfected(airport) {
+  let svgContent = svgObject.contentDocument;
+  var airportSource = svgContent.getElementById(airport.source);
+  const { x, y } = airportSource.getBoundingClientRect();
+
+  let tileX = getMatrixRowByX(x);
+  let tileY = getMatrixColoumByY(y);
+  let airportTile = document.getElementById(`${tileX}-${tileY}`);
+  if (virusMatrix[tileX][tileY] == 1) {
+    return true;
+  } else return false;
+}
+
+//TODO: Duplicate in scripct.ts ! Fix it
+function spreadVirus(virus) {
+  // determine column and column of clicked virus tile
+  let column = parseInt(virus.id.split('-')[0]);
+  let row = parseInt(virus.id.split('-')[1]);
+
+  // get all relevant virus tiles
+  let virusTiles = new Array<[number, number]>();
+  virusTiles.push([column, row]); // virus tile on mouse point
+  getNeighbors(column, row, 3).forEach(neighbor => virusTiles.push(neighbor)); // all neighboring virus tiles
+
+  // enable all virus tiles that are not in the sea
+  virusTiles.forEach(neighbor => {
+    if (pointInSea(neighbor[0], neighbor[1])) return;
+    virusMatrix[neighbor[0]][neighbor[1]] = 1;
+
+    // we can already make the tile visible, but it's functionality/spreading only starts on next frame
+    document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
+  });
+}
+
+function getMatrixRowByX(x) {
+  return Math.floor(x / virusWidth);
+}
+
+function getMatrixColoumByY(y) {
+  return Math.floor(y / (virusHeight * 0.75));
 }
