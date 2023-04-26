@@ -16,22 +16,22 @@ var decreaseOverPopulationElement;
 var infectedCountElement;
 var healthyCountElement;
 function assignHtmlVariables() {
-    worldSvgElement = svgObject.contentDocument.querySelector("svg");
-    virusMapElement = document.querySelector("#virusMap");
-    cycleCounterElement = document.querySelector(".cycleCounter span");
-    infectedCountElement = document.querySelector(".infectedCount span");
-    healthyCountElement = document.querySelector(".healthyCount span");
-    brushSymbol = document.querySelector(".brush .brushSymbol");
-    brushFillElement = document.querySelector(".brush .hexagonFill");
-    brushSizeElement = document.querySelector(".brush #brushSize");
-    increaseBrushSizeElement = document.querySelector(".brush #increaseBrushSize");
-    decreaseBrushSizeElement = document.querySelector(".brush #decreaseBrushSize");
-    minPopulationElement = document.querySelector(".minPopulation #minPopulation");
-    increaseMinPopulationElement = document.querySelector(".minPopulation #increaseMinPopulation");
-    decreaseMinPopulationElement = document.querySelector(".minPopulation #decreaseMinPopulation");
-    overPopulationElement = document.querySelector(".overPopulation #overPopulation");
-    increaseOverPopulationElement = document.querySelector(".overPopulation #increaseOverPopulation");
-    decreaseOverPopulationElement = document.querySelector(".overPopulation #decreaseOverPopulation");
+    worldSvgElement = svgObject.contentDocument.querySelector('svg');
+    virusMapElement = document.querySelector('#virusMap');
+    cycleCounterElement = document.querySelector('.cycleCounter span');
+    infectedCountElement = document.querySelector('.infectedCount span');
+    healthyCountElement = document.querySelector('.healthyCount span');
+    brushSymbol = document.querySelector('.brush .brushSymbol');
+    brushFillElement = document.querySelector('.brush .hexagonFill');
+    brushSizeElement = document.querySelector('.brush #brushSize');
+    increaseBrushSizeElement = document.querySelector('.brush #increaseBrushSize');
+    decreaseBrushSizeElement = document.querySelector('.brush #decreaseBrushSize');
+    minPopulationElement = document.querySelector('.minPopulation #minPopulation');
+    increaseMinPopulationElement = document.querySelector('.minPopulation #increaseMinPopulation');
+    decreaseMinPopulationElement = document.querySelector('.minPopulation #decreaseMinPopulation');
+    overPopulationElement = document.querySelector('.overPopulation #overPopulation');
+    increaseOverPopulationElement = document.querySelector('.overPopulation #increaseOverPopulation');
+    decreaseOverPopulationElement = document.querySelector('.overPopulation #decreaseOverPopulation');
 }
 function assignHtmlEvents() {
     assignBrushEvents();
@@ -41,7 +41,7 @@ function assignHtmlEvents() {
 function assignBrushEvents() {
     brushSymbol.onclick = () => {
         brushFill = !brushFill;
-        brushFillElement.style.visibility = brushFill ? "hidden" : "visible";
+        brushFillElement.style.visibility = brushFill ? 'hidden' : 'visible';
     };
     decreaseBrushSizeElement.onclick = () => {
         if (brushSize > brushSizeMin)
@@ -83,4 +83,5 @@ function initializeHtmlElements() {
     minPopulationElement.innerText = minPopulation.toString();
     overPopulationElement.innerText = overPopulation.toString();
 }
+export {};
 //# sourceMappingURL=htmlHelper.js.map

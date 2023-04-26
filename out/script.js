@@ -199,4 +199,5 @@ function spreadVirus(virus, brush) {
         document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
     });
 }
+export {};
 //# sourceMappingURL=script.js.map

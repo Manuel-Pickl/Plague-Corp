@@ -80,4 +80,5 @@ function determineLife(column, row, activeNeighborCount) {
     else
         console.log('SHOULD NEVER HAPPEN!');
 }
+export {};
 //# sourceMappingURL=gameOfLife.js.map
