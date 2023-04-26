@@ -139,18 +139,15 @@ function initiateFlight(airports) {
     //set values for planes
     let plane = document.createElement('img');
     plane.classList.add('airplane');
-    plane.src = isAirportInfectedOnStart
-        ? 'assets/airplane_infected.png'
-        : 'assets/airplane.png';
-    plane.style.transitionDuration = `${flightTime}s`;
+    plane.src = isAirportInfectedOnStart ? 'assets/airplane_infected.png' : 'assets/airplane.png';
     plane.style.left = `${sourceX}px`;
     plane.style.top = `${sourceY}px`;
     plane.style.rotate = `${degree}deg`;
+    plane.style.transition = `transform ${flightTime}s`;
     document.getElementById('virusMap').append(plane);
     setTimeout(() => {
-        plane.style.left = `${destinationX}px`;
-        plane.style.top = `${destinationY}px`;
-    }, 100);
+        plane.style.transform = `translate(${destinationX}px, ${destinationY}px);`;
+    }, 10);
     setTimeout(() => {
         //spread virus on flight destination
         if (isAirportInfectedOnStart) {

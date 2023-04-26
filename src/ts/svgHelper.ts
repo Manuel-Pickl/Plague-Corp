@@ -87,7 +87,7 @@ async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number,
           parseInt(svgObject.style.height)
         );
       }
-      
+
       placePlanes();
 
       for (let row = 0; row < rows; row++) {
@@ -154,32 +154,32 @@ function initiateFlight(airports) {
   const { x: destinationX, y: destinationY } = airportDestination.getBoundingClientRect();
 
   //getPlaneRotation
-  let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) + degreeOfPlaneImage;
+  let degree =
+    getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) + degreeOfPlaneImage;
 
   //get flight time
   let distance = distanceBetweenPoints(sourceX, sourceY, destinationX, destinationY);
   let flightTime = calculateTime(distance, 15);
-  
+
   let isAirportInfectedOnStart = isAirportInfected(airports);
 
   //set values for planes
   let plane = document.createElement('img');
   plane.classList.add('airplane');
 
-  plane.src = isAirportInfectedOnStart
-    ? 'assets/airplane_infected.png'
-    : 'assets/airplane.png';
-  
-  plane.style.transitionDuration = `${flightTime}s`;
+  plane.src = isAirportInfectedOnStart ? 'assets/airplane_infected.png' : 'assets/airplane.png';
+
   plane.style.left = `${sourceX}px`;
   plane.style.top = `${sourceY}px`;
   plane.style.rotate = `${degree}deg`;
+
+  plane.style.transition = `transform ${flightTime}s`;
+
   document.getElementById('virusMap').append(plane);
 
   setTimeout(() => {
-    plane.style.left = `${destinationX}px`;
-    plane.style.top = `${destinationY}px`;
-  }, 100);
+    plane.style.transform = `translate(${destinationX}px, ${destinationY}px);`;
+  }, 10);
 
   setTimeout(() => {
     //spread virus on flight destination
