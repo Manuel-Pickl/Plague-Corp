@@ -20,5 +20,4 @@ svg {
   width: 20px;
   height: 20px;
   translate: -50% -50%;
-  transition-property: transform;
 }
