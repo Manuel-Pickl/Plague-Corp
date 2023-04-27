@@ -1,27 +1,27 @@
-const maxFramerate: number = 15;
-const maxHudFramerate: number = maxFramerate;
+export const maxFramerate: number = 15;
+export const maxHudFramerate: number = maxFramerate;
 
-const virusWidth: number = 7;
-const virusHeight: number = virusWidth;
+export const virusWidth: number = 7;
+export const virusHeight: number = virusWidth;
 
-const spawnProbability = 0.001;
+export const spawnProbability = 0.001;
 
-const brushSizeMin = 1;
-const brushSizeMax = 10;
+export const brushSizeMin = 1;
+export const brushSizeMax = 10;
 
-const minPopulationMin = 1;
-const minPopulationMax = 4;
-const overPopulationMin = 1;
-const overPopulationMax = 7;
+export const minPopulationMin = 1;
+export const minPopulationMax = 4;
+export const overPopulationMin = 1;
+export const overPopulationMax = 7;
 
-const degreeOfPlaneImage = 45;
+export const degreeOfPlaneImage = 45;
 
 // debug
-const debugMode: boolean = true;
-const logCyclus: boolean = false;
-const seaClickTest: boolean = true;
+export const debugMode: boolean = true;
+export const logCyclus: boolean = false;
+export const seaClickTest: boolean = true;
 
-const airportNeighbours = {
+export const airportNeighbours = {
   'FH-AfrikaOst': ['FH-Madagaska'],
   'FH-Madagaska': ['FH-AfrikaOst'],
   'FH-Brasilien': ['FH-AfrikaSued', 'FH-Kolumbien'],

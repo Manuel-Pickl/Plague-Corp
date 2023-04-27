@@ -1,4 +1,8 @@
-function gameOfLife(column: number, row: number) {
+import { virusMatrixNextStep, virusMatrix } from './script.js';
+import { minPopulation, overPopulation } from './htmlHelper.js';
+import { virusColumns, virusRows } from './svgHelper.js';
+
+export function gameOfLife(column: number, row: number) {
   let activeNeighborCount = getActiveNeighborCount(column, row);
   let cellIsAlive = determineLife(column, row, activeNeighborCount);
   virusMatrixNextStep[column][row] = cellIsAlive;
@@ -46,7 +50,7 @@ function axialAdd(a, b) {
  * @param {number} radius - The row of the virus tile, default is 1
  * @returns {[number, number][]} An array of all neighbors in specified radius. The elements are returned as a tuple of column & row
  */
-function getNeighbors(col: number, row: number, distance: number = 1) {
+export function getNeighbors(col: number, row: number, distance: number = 1) {
   // store all coordiantes/neighbors
   const results = [];
 

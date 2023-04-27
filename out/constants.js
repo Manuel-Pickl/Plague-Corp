@@ -1,20 +1,20 @@
-const maxFramerate = 15;
-const maxHudFramerate = maxFramerate;
-const virusWidth = 7;
-const virusHeight = virusWidth;
-const spawnProbability = 0.001;
-const brushSizeMin = 1;
-const brushSizeMax = 10;
-const minPopulationMin = 1;
-const minPopulationMax = 4;
-const overPopulationMin = 1;
-const overPopulationMax = 7;
-const degreeOfPlaneImage = 45;
+export const maxFramerate = 15;
+export const maxHudFramerate = maxFramerate;
+export const virusWidth = 7;
+export const virusHeight = virusWidth;
+export const spawnProbability = 0.001;
+export const brushSizeMin = 1;
+export const brushSizeMax = 10;
+export const minPopulationMin = 1;
+export const minPopulationMax = 4;
+export const overPopulationMin = 1;
+export const overPopulationMax = 7;
+export const degreeOfPlaneImage = 45;
 // debug
-const debugMode = true;
-const logCyclus = false;
-const seaClickTest = true;
-const airportNeighbours = {
+export const debugMode = true;
+export const logCyclus = false;
+export const seaClickTest = true;
+export const airportNeighbours = {
     'FH-AfrikaOst': ['FH-Madagaska'],
     'FH-Madagaska': ['FH-AfrikaOst'],
     'FH-Brasilien': ['FH-AfrikaSued', 'FH-Kolumbien'],
@@ -41,5 +41,4 @@ const airportNeighbours = {
     'FH-AustralienWest': ['FH-Indonesien'],
     'FH-Groenland': ['FH-Canada', 'FH-England'],
 };
-export {};
 //# sourceMappingURL=constants.js.map

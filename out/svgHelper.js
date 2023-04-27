@@ -7,10 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import anime from '/animejs/lib/anime.es.js';
-var svgObject = document.getElementById('svgObject');
+import anime from '../../animejs/lib/anime.es.js';
+import { getHeight, getWidth } from './helperFunctions.js';
+import { onSvgLoad } from './script.js';
+import { flightEnabled, virusMapElement } from './htmlHelper.js';
+import { virusMatrix, spreadVirus } from './script.js';
+import * as constants from './constants.js';
+export var svgObject = document.getElementById('svgObject');
 svgObject === null || svgObject === void 0 ? void 0 : svgObject.addEventListener('load', onSvgLoad, false);
-function determineSvgSize() {
+export var virusColumns;
+export var virusRows;
+export function determineSvgSize() {
     // calculate best fit for svg
     let width = getWidth();
     let height = getHeight();
@@ -19,11 +26,11 @@ function determineSvgSize() {
     let aspectWidth = Math.floor(height * 2.333);
     width = width < aspectWidth ? width : aspectWidth;
     // calculate grid based on svg and virus size
-    virusColumns = Math.floor((width - virusWidth / 2) / virusWidth);
-    virusRows = Math.floor((height - virusHeight * 0.25) / (virusHeight * 0.75));
+    virusColumns = Math.floor((width - constants.virusWidth / 2) / constants.virusWidth);
+    virusRows = Math.floor((height - constants.virusHeight * 0.25) / (constants.virusHeight * 0.75));
     // adjust size to fit grid
-    let calcWidth = (virusColumns + 0.5) * virusWidth;
-    let calcHeight = ((virusRows - 1) * virusHeight * 3) / 4 + virusHeight;
+    let calcWidth = (virusColumns + 0.5) * constants.virusWidth;
+    let calcHeight = ((virusRows - 1) * constants.virusHeight * 3) / 4 + constants.virusHeight;
     // set sizes
     svgObject.style.width = `${width}px`;
     svgObject.style.height = `${height}px`;
@@ -34,7 +41,7 @@ function determineSvgSize() {
 function preprocessWorldSvg(worldSvgElement, columns, rows) {
     return __awaiter(this, void 0, void 0, function* () {
         const seaMatrix = new Array(columns).fill(null).map(() => new Array(rows).fill(0));
-        const offscreenCanvas = new OffscreenCanvas(columns * virusWidth, rows * virusHeight * 0.75);
+        const offscreenCanvas = new OffscreenCanvas(columns * constants.virusWidth, rows * constants.virusHeight * 0.75);
         const ctx = offscreenCanvas.getContext('2d', {
             willReadFrequently: true,
         });
@@ -49,13 +56,13 @@ function preprocessWorldSvg(worldSvgElement, columns, rows) {
                 placePlanes();
                 for (let row = 0; row < rows; row++) {
                     for (let column = 0; column < columns; column++) {
-                        let positionX = column * virusWidth;
+                        let positionX = column * constants.virusWidth;
                         if (row % 2 === 1)
-                            positionX += virusWidth / 2;
-                        let positionY = row * virusHeight * 0.75;
+                            positionX += constants.virusWidth / 2;
+                        let positionY = row * constants.virusHeight * 0.75;
                         let onLand;
                         if (ctx) {
-                            const imageData = ctx.getImageData(positionX + virusWidth / 2, positionY + virusHeight / 2, 1, 1);
+                            const imageData = ctx.getImageData(positionX + constants.virusWidth / 2, positionY + constants.virusHeight / 2, 1, 1);
                             onLand = imageData.data[3] !== 0;
                         }
                         else {
@@ -71,7 +78,7 @@ function preprocessWorldSvg(worldSvgElement, columns, rows) {
         return seaMatrix;
     });
 }
-function createSeaMatrix() {
+export function createSeaMatrix() {
     return __awaiter(this, void 0, void 0, function* () {
         const worldSvg = svgObject.contentDocument.querySelector('svg');
         return preprocessWorldSvg(worldSvg, virusColumns, virusRows);
@@ -102,7 +109,8 @@ function initiateFlight(airports) {
     var airportDestination = svgContent.getElementById(airports.destination);
     const { x: destinationX, y: destinationY } = airportDestination.getBoundingClientRect();
     //getPlaneRotation
-    let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) + degreeOfPlaneImage;
+    let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) +
+        constants.degreeOfPlaneImage;
     //get flight time
     let distance = distanceBetweenPoints(sourceX, sourceY, destinationX, destinationY);
     let flightTime = calculateTime(distance, 15);
@@ -117,14 +125,14 @@ function initiateFlight(airports) {
     document.getElementById('virusMap').append(plane);
     let animateFlying = anime({
         targets: '.airplane',
-        translateX: `${destinationX}px`,
-        translateY: `${destinationY}px`,
+        left: `${destinationX}px`,
+        top: `${destinationY}px`,
         autoplay: false,
     });
     //animateFlying.restart();
     setTimeout(() => {
         animateFlying.restart();
-    }, 10);
+    }, 1000);
     setTimeout(() => {
         //spread virus on flight destination
         if (isAirportInfectedOnStart) {
@@ -135,13 +143,17 @@ function initiateFlight(airports) {
         }
         //remove html plane after flight is over
         plane.remove();
+        animateFlying.stop();
     }, flightTime * 1000 + 200);
 }
 function selectRandomAirports() {
-    let maxValue = Object.keys(airportNeighbours).length;
+    let maxValue = Object.keys(constants.airportNeighbours).length;
     let randomAirportNumber = Math.floor(Math.random() * maxValue);
-    let airportName = Object.keys(airportNeighbours)[randomAirportNumber];
-    return { source: airportName, destination: getRandomElement(airportNeighbours[airportName]) };
+    let airportName = Object.keys(constants.airportNeighbours)[randomAirportNumber];
+    return {
+        source: airportName,
+        destination: getRandomElement(constants.airportNeighbours[airportName]),
+    };
 }
 function getRandomElement(arr) {
     const randomIndex = Math.floor(Math.random() * arr.length);
@@ -170,9 +182,9 @@ function isAirportInfected(airport) {
         return false;
 }
 function getMatrixRowByX(x) {
-    return Math.floor(x / virusWidth);
+    return Math.floor(x / constants.virusWidth);
 }
 function getMatrixColoumByY(y) {
-    return Math.floor(y / (virusHeight * 0.75));
+    return Math.floor(y / (constants.virusHeight * 0.75));
 }
 //# sourceMappingURL=svgHelper.js.map

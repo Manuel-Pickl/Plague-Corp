@@ -7,26 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { assignHtmlVariables, assignHtmlEvents, initializeHtmlElements, brushSize, virusMapElement, cycleCounterElement, infectedCountElement, healthyCountElement, } from './htmlHelper.js';
+import { determineSvgSize, createSeaMatrix, virusColumns, virusRows } from './svgHelper.js';
+import { gameOfLife, getNeighbors } from './gameOfLife.js';
+import * as constants from './constants.js';
 // intervals
 var simulationInterval;
 var hudInterval;
 // matrices
-var virusMatrix;
-var virusMatrixNextStep;
+export var virusMatrix;
+export var virusMatrixNextStep;
 var seaMatrix;
-var virusColumns;
-var virusRows;
 var mouseIsDown = false;
 // hud
-var cycleCount = 0;
-var brushFill = true;
-var brushSize = 1;
-var minPopulation = 1;
-var overPopulation = 7;
-var flightEnabled = true;
 var possibleVirusCount = 0;
 var infectedCount = 0;
-function onSvgLoad() {
+export var cycleCount = 0;
+export function onSvgLoad() {
     return __awaiter(this, void 0, void 0, function* () {
         assignHtmlVariables();
         assignHtmlEvents();
@@ -43,16 +40,16 @@ function initializeSimulation() {
         determineSvgSize();
         yield createMatrices();
         // placeVirusRandomly();
-        if (debugMode)
+        if (constants.debugMode)
             console.log('simulation initialized');
     });
 }
 function startSimluation() {
-    simulationInterval = setInterval(draw, 1000 / maxFramerate);
-    hudInterval = setInterval(updateHud, 1000 / maxHudFramerate);
+    simulationInterval = setInterval(draw, 1000 / constants.maxFramerate);
+    hudInterval = setInterval(updateHud, 1000 / constants.maxHudFramerate);
     document.querySelector('.splash-screen').style.visibility = 'hidden';
     enableVirusPlacement();
-    if (debugMode)
+    if (constants.debugMode)
         console.log('simulation started');
 }
 function createMatrices() {
@@ -61,7 +58,7 @@ function createMatrices() {
         createVirusMatrix();
         seaMatrix = yield createSeaMatrix();
         console.log(performance.now() - start + ' ' + 'ms');
-        if (debugMode)
+        if (constants.debugMode)
             console.log('game matrices created');
     });
 }
@@ -88,14 +85,14 @@ function createVirusMatrix() {
             virus.id = `${column}-${row}`;
             virus.classList.add('virus');
             virus.classList.add(Math.random() < 0.5 ? 'alpha' : 'beta');
-            let positionX = column * virusWidth;
+            let positionX = column * constants.virusWidth;
             if (row % 2 == 1)
-                positionX += virusWidth / 2;
-            let positionY = row * virusHeight * 0.75;
+                positionX += constants.virusWidth / 2;
+            let positionY = row * constants.virusHeight * 0.75;
             virus.style.left = `${positionX}px`;
             virus.style.top = `${positionY}px`;
-            virus.style.width = `${virusWidth}px`;
-            virus.style.height = `${virusHeight}px`;
+            virus.style.width = `${constants.virusWidth}px`;
+            virus.style.height = `${constants.virusHeight}px`;
             virus.style.opacity = '0';
             // virus.style.visibility = "hidden";
             virusMapElement.appendChild(virus);
@@ -118,7 +115,7 @@ function draw() {
         }
     }
     generate();
-    if (logCyclus)
+    if (constants.logCyclus)
         console.log('==========');
 }
 function placeVirusRandomly() {
@@ -128,7 +125,7 @@ function placeVirusRandomly() {
             if (pointInSea(column, row)) {
                 randomNumber = 0;
             }
-            else if (Math.random() <= spawnProbability) {
+            else if (Math.random() <= constants.spawnProbability) {
                 randomNumber = 1;
                 infectedCount++;
             }
@@ -182,7 +179,7 @@ function updateHud() {
     infectedCountElement.innerText = infectedCount.toString();
     healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }
-function spreadVirus(virus, brush) {
+export function spreadVirus(virus, brush) {
     // determine column and column of clicked virus tile
     let column = parseInt(virus.id.split('-')[0]);
     let row = parseInt(virus.id.split('-')[1]);
@@ -199,5 +196,4 @@ function spreadVirus(virus, brush) {
         document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
     });
 }
-export {};
 //# sourceMappingURL=script.js.map

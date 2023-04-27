@@ -1,7 +1,15 @@
+import * as constants from './constants.js';
+import { svgObject } from './svgHelper.js';
+//hud elements
+var brushFill = true;
+export var brushSize = 1;
+export var minPopulation = 1;
+export var overPopulation = 7;
+export var flightEnabled = true;
 // html elements
 var worldSvgElement;
-var virusMapElement;
-var cycleCounterElement;
+export var virusMapElement;
+export var cycleCounterElement;
 var brushSymbol;
 var brushFillElement;
 var brushSizeElement;
@@ -13,9 +21,9 @@ var decreaseMinPopulationElement;
 var overPopulationElement;
 var increaseOverPopulationElement;
 var decreaseOverPopulationElement;
-var infectedCountElement;
-var healthyCountElement;
-function assignHtmlVariables() {
+export var infectedCountElement;
+export var healthyCountElement;
+export function assignHtmlVariables() {
     worldSvgElement = svgObject.contentDocument.querySelector('svg');
     virusMapElement = document.querySelector('#virusMap');
     cycleCounterElement = document.querySelector('.cycleCounter span');
@@ -33,55 +41,54 @@ function assignHtmlVariables() {
     increaseOverPopulationElement = document.querySelector('.overPopulation #increaseOverPopulation');
     decreaseOverPopulationElement = document.querySelector('.overPopulation #decreaseOverPopulation');
 }
-function assignHtmlEvents() {
+export function assignHtmlEvents() {
     assignBrushEvents();
     assignMinPopulationEvents();
     assignoverPopulationEvents();
 }
-function assignBrushEvents() {
+export function assignBrushEvents() {
     brushSymbol.onclick = () => {
         brushFill = !brushFill;
         brushFillElement.style.visibility = brushFill ? 'hidden' : 'visible';
     };
     decreaseBrushSizeElement.onclick = () => {
-        if (brushSize > brushSizeMin)
+        if (brushSize > constants.brushSizeMin)
             brushSize--;
         brushSizeElement.innerText = brushSize.toString();
     };
     increaseBrushSizeElement.onclick = () => {
-        if (brushSize < brushSizeMax)
+        if (brushSize < constants.brushSizeMax)
             brushSize++;
         brushSizeElement.innerText = brushSize.toString();
     };
 }
 function assignMinPopulationEvents() {
     decreaseMinPopulationElement.onclick = () => {
-        if (minPopulation > minPopulationMin)
+        if (minPopulation > constants.minPopulationMin)
             minPopulation--;
         minPopulationElement.innerText = minPopulation.toString();
     };
     increaseMinPopulationElement.onclick = () => {
-        if (minPopulation < minPopulationMax)
+        if (minPopulation < constants.minPopulationMax)
             minPopulation++;
         minPopulationElement.innerText = minPopulation.toString();
     };
 }
 function assignoverPopulationEvents() {
     decreaseOverPopulationElement.onclick = () => {
-        if (overPopulation > overPopulationMin)
+        if (overPopulation > constants.overPopulationMin)
             overPopulation--;
         overPopulationElement.innerText = overPopulation.toString();
     };
     increaseOverPopulationElement.onclick = () => {
-        if (overPopulation < overPopulationMax)
+        if (overPopulation < constants.overPopulationMax)
             overPopulation++;
         overPopulationElement.innerText = overPopulation.toString();
     };
 }
-function initializeHtmlElements() {
+export function initializeHtmlElements() {
     brushSizeElement.innerText = brushSize.toString();
     minPopulationElement.innerText = minPopulation.toString();
     overPopulationElement.innerText = overPopulation.toString();
 }
-export {};
 //# sourceMappingURL=htmlHelper.js.map

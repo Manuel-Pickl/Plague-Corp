@@ -1,28 +1,35 @@
+import {
+  assignHtmlVariables,
+  assignHtmlEvents,
+  initializeHtmlElements,
+  brushSize,
+  virusMapElement,
+  cycleCounterElement,
+  infectedCountElement,
+  healthyCountElement,
+} from './htmlHelper.js';
+
+import { determineSvgSize, createSeaMatrix, virusColumns, virusRows } from './svgHelper.js';
+import { gameOfLife, getNeighbors } from './gameOfLife.js';
+import * as constants from './constants.js';
+
 // intervals
 var simulationInterval: any;
 var hudInterval: any;
 
 // matrices
-var virusMatrix: number[][];
-var virusMatrixNextStep: number[][];
+export var virusMatrix: number[][];
+export var virusMatrixNextStep: number[][];
 var seaMatrix: number[][];
 
-var virusColumns: number;
-var virusRows: number;
 var mouseIsDown: boolean = false;
 
 // hud
-var cycleCount: number = 0;
-var brushFill: boolean = true;
-var brushSize: number = 1;
-var minPopulation: number = 1;
-var overPopulation: number = 7;
-var flightEnabled: boolean = true;
-
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
+export var cycleCount: number = 0;
 
-async function onSvgLoad() {
+export async function onSvgLoad() {
   assignHtmlVariables();
   assignHtmlEvents();
   initializeHtmlElements();
@@ -40,18 +47,18 @@ async function initializeSimulation() {
   await createMatrices();
   // placeVirusRandomly();
 
-  if (debugMode) console.log('simulation initialized');
+  if (constants.debugMode) console.log('simulation initialized');
 }
 
 function startSimluation() {
-  simulationInterval = setInterval(draw, 1000 / maxFramerate);
-  hudInterval = setInterval(updateHud, 1000 / maxHudFramerate);
+  simulationInterval = setInterval(draw, 1000 / constants.maxFramerate);
+  hudInterval = setInterval(updateHud, 1000 / constants.maxHudFramerate);
 
   (<HTMLElement>document.querySelector('.splash-screen')).style.visibility = 'hidden';
 
   enableVirusPlacement();
 
-  if (debugMode) console.log('simulation started');
+  if (constants.debugMode) console.log('simulation started');
 }
 
 async function createMatrices() {
@@ -61,7 +68,7 @@ async function createMatrices() {
 
   console.log(performance.now() - start + ' ' + 'ms');
 
-  if (debugMode) console.log('game matrices created');
+  if (constants.debugMode) console.log('game matrices created');
 }
 
 function createVirusMatrix() {
@@ -89,13 +96,13 @@ function createVirusMatrix() {
       virus.id = `${column}-${row}`;
       virus.classList.add('virus');
       virus.classList.add(Math.random() < 0.5 ? 'alpha' : 'beta');
-      let positionX = column * virusWidth;
-      if (row % 2 == 1) positionX += virusWidth / 2;
-      let positionY = row * virusHeight * 0.75;
+      let positionX = column * constants.virusWidth;
+      if (row % 2 == 1) positionX += constants.virusWidth / 2;
+      let positionY = row * constants.virusHeight * 0.75;
       virus.style.left = `${positionX}px`;
       virus.style.top = `${positionY}px`;
-      virus.style.width = `${virusWidth}px`;
-      virus.style.height = `${virusHeight}px`;
+      virus.style.width = `${constants.virusWidth}px`;
+      virus.style.height = `${constants.virusHeight}px`;
       virus.style.opacity = '0';
       // virus.style.visibility = "hidden";
 
@@ -121,7 +128,7 @@ function draw() {
 
   generate();
 
-  if (logCyclus) console.log('==========');
+  if (constants.logCyclus) console.log('==========');
 }
 
 function placeVirusRandomly() {
@@ -131,7 +138,7 @@ function placeVirusRandomly() {
 
       if (pointInSea(column, row)) {
         randomNumber = 0;
-      } else if (Math.random() <= spawnProbability) {
+      } else if (Math.random() <= constants.spawnProbability) {
         randomNumber = 1;
         infectedCount++;
       }
@@ -197,7 +204,7 @@ function updateHud() {
   healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
 }
 
-function spreadVirus(virus, brush) {
+export function spreadVirus(virus, brush) {
   // determine column and column of clicked virus tile
   let column = parseInt(virus.id.split('-')[0]);
   let row = parseInt(virus.id.split('-')[1]);
