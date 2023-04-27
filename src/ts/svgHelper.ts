@@ -106,15 +106,17 @@ export async function createSeaMatrix() {
 }
 
 function placePlanes() {
+  let count = 0;
   setInterval(() => {
     if (!flightEnabled) {
       return;
     }
     if (Math.random() > 0.1) {
       var Airports = selectRandomAirports();
-      initiateFlight(Airports);
+      count++;
+      initiateFlight(Airports, count);
     }
-  }, 1000);
+  }, 2000);
 }
 
 function getDegreeBetweenPoints(x1, y1, x2, y2) {
@@ -126,7 +128,7 @@ function getDegreeBetweenPoints(x1, y1, x2, y2) {
   return (degrees + 360) % 360;
 }
 
-function initiateFlight(airports) {
+function initiateFlight(airports, count) {
   let svgContent = svgObject.contentDocument;
 
   var airportSource = svgContent.getElementById(airports.source);
@@ -148,6 +150,8 @@ function initiateFlight(airports) {
   //set values for planes
   let plane = document.createElement('img');
   plane.classList.add('airplane');
+  //it is important that every plane is uniquely identifiable so that every plane has its own animation
+  plane.setAttribute('id', 'airplane' + count);
 
   plane.src = isAirportInfectedOnStart ? 'assets/airplane_infected.png' : 'assets/airplane.png';
 
@@ -156,18 +160,18 @@ function initiateFlight(airports) {
   plane.style.rotate = `${degree}deg`;
   document.getElementById('virusMap').append(plane);
 
-  let animateFlying = anime({
-    targets: '.airplane',
+  anime({
+    targets: `#airplane${count}`,
     left: `${destinationX}px`,
     top: `${destinationY}px`,
-    autoplay: false,
+    autoplay: true,
+    easing: 'easeInOutQuad',
+    delay: 500,
+    duration: flightTime * 1000,
+    complete: function () {
+      anime.remove('.airplane line:nth-child(1)');
+    },
   });
-
-  //animateFlying.restart();
-
-  setTimeout(() => {
-    animateFlying.restart();
-  }, 1000);
 
   setTimeout(() => {
     //spread virus on flight destination
@@ -179,7 +183,6 @@ function initiateFlight(airports) {
     }
     //remove html plane after flight is over
     plane.remove();
-    animateFlying.stop();
   }, flightTime * 1000 + 200);
 }
 
