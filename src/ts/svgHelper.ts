@@ -1,39 +1,17 @@
-var svgObject: any = document.getElementById('svgObject');
+import anime from '../../animejs/lib/anime.es.js';
+import { getHeight, getWidth } from './helperFunctions.js';
+import { onSvgLoad } from './script.js';
+import { flightEnabled, virusMapElement } from './htmlHelper.js';
+import { virusMatrix, spreadVirus } from './script.js';
+import * as constants from './constants.js';
+
+export var svgObject: any = document.getElementById('svgObject');
 svgObject?.addEventListener('load', onSvgLoad, false);
 
-var svgPlane1: any = document.getElementById('plane1');
-var svgPlane2: any = document.getElementById('plane2');
-var svgPlane3: any = document.getElementById('plane3');
+export var virusColumns: number;
+export var virusRows: number;
 
-const airportNeighbours = {
-  'FH-AfrikaOst': ['FH-Madagaska'],
-  'FH-Madagaska': ['FH-AfrikaOst'],
-  'FH-Brasilien': ['FH-AfrikaSued', 'FH-Kolumbien'],
-  'FH-AfrikaSued': ['FH-Brasilien'],
-  'FH-Kolumbien': ['FH-Mexiko', 'FH-USASued', 'FH-Protugal'],
-  'FH-Mexiko': ['FH-USAWest', 'FH-Kolumbien'],
-  'FH-USAWest': ['FH-USANord', 'FH-Mexiko'],
-  'FH-USASued': ['FH-USANord', 'FH-Kolumbien'],
-  'FH-USANord': ['FH-Canada', 'FH-England', 'FH-USASued', 'FH-USAWest'],
-  'FH-Canada': ['FH-USANord', 'FH-Groenland'],
-  'FH-Protugal': ['FH-England', 'FH-Kolumbien'],
-  'FH-England': ['FH-Deutschland', 'FH-Egypt', 'FH-Protugal', 'FH-USANord', 'FH-Groenland'],
-  'FH-Deutschland': ['FH-England'],
-  'FH-Egypt': ['FH-SaudiArabien', 'FH-England'],
-  'FH-SaudiArabien': ['FH-Idien', 'FH-Egypt'],
-  'FH-Idien': ['FH-Thailand', 'FH-SaudiArabien'],
-  'FH-Thailand': ['FH-China', 'FH-Indonesien', 'FH-Idien'],
-  'FH-China': ['FH-Thailand', 'FH-Japan'],
-  'FH-Japan': ['FH-Papua', 'FH-China'],
-  'FH-Papua': ['FH-AustralienNord', 'FH-AustralienOst', 'FH-Japan'],
-  'FH-AustralienNord': ['FH-Papua'],
-  'FH-AustralienOst': ['FH-Papua'],
-  'FH-Indonesien': ['FH-AustralienWest', 'FH-Thailand'],
-  'FH-AustralienWest': ['FH-Indonesien'],
-  'FH-Groenland': ['FH-Canada', 'FH-England'],
-};
-
-function determineSvgSize() {
+export function determineSvgSize() {
   // calculate best fit for svg
   let width: number = getWidth();
   let height: number = getHeight();
@@ -45,12 +23,12 @@ function determineSvgSize() {
   width = width < aspectWidth ? width : aspectWidth;
 
   // calculate grid based on svg and virus size
-  virusColumns = Math.floor((width - virusWidth / 2) / virusWidth);
-  virusRows = Math.floor((height - virusHeight * 0.25) / (virusHeight * 0.75));
+  virusColumns = Math.floor((width - constants.virusWidth / 2) / constants.virusWidth);
+  virusRows = Math.floor((height - constants.virusHeight * 0.25) / (constants.virusHeight * 0.75));
 
   // adjust size to fit grid
-  let calcWidth = (virusColumns + 0.5) * virusWidth;
-  let calcHeight = ((virusRows - 1) * virusHeight * 3) / 4 + virusHeight;
+  let calcWidth = (virusColumns + 0.5) * constants.virusWidth;
+  let calcHeight = ((virusRows - 1) * constants.virusHeight * 3) / 4 + constants.virusHeight;
 
   // set sizes
   svgObject.style.width = `${width}px`;
@@ -64,7 +42,10 @@ function determineSvgSize() {
 async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number, rows: number) {
   const seaMatrix = new Array(columns).fill(null).map(() => new Array(rows).fill(0));
 
-  const offscreenCanvas = new OffscreenCanvas(columns * virusWidth, rows * virusHeight * 0.75);
+  const offscreenCanvas = new OffscreenCanvas(
+    columns * constants.virusWidth,
+    rows * constants.virusHeight * 0.75
+  );
   const ctx: any = offscreenCanvas.getContext('2d', {
     willReadFrequently: true,
   });
@@ -87,20 +68,20 @@ async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number,
           parseInt(svgObject.style.height)
         );
       }
-      
+
       placePlanes();
 
       for (let row = 0; row < rows; row++) {
         for (let column = 0; column < columns; column++) {
-          let positionX = column * virusWidth;
-          if (row % 2 === 1) positionX += virusWidth / 2;
-          let positionY = row * virusHeight * 0.75;
+          let positionX = column * constants.virusWidth;
+          if (row % 2 === 1) positionX += constants.virusWidth / 2;
+          let positionY = row * constants.virusHeight * 0.75;
 
           let onLand;
           if (ctx) {
             const imageData = ctx.getImageData(
-              positionX + virusWidth / 2,
-              positionY + virusHeight / 2,
+              positionX + constants.virusWidth / 2,
+              positionY + constants.virusHeight / 2,
               1,
               1
             );
@@ -119,19 +100,22 @@ async function preprocessWorldSvg(worldSvgElement: HTMLElement, columns: number,
   return seaMatrix;
 }
 
-async function createSeaMatrix() {
+export async function createSeaMatrix() {
   const worldSvg = svgObject.contentDocument.querySelector('svg');
   return preprocessWorldSvg(worldSvg, virusColumns, virusRows);
 }
 
 function placePlanes() {
+  let count = 0;
   setInterval(() => {
     if (!flightEnabled) {
       return;
     }
-
-    var Airports = selectRandomAirports();
-    initiateFlight(Airports);
+    if (Math.random() > 0.1) {
+      var Airports = selectRandomAirports();
+      count++;
+      initiateFlight(Airports, count);
+    }
   }, planeSpawnInterval * 2000);
 }
 
@@ -144,7 +128,7 @@ function getDegreeBetweenPoints(x1, y1, x2, y2) {
   return (degrees + 360) % 360;
 }
 
-function initiateFlight(airports) {
+function initiateFlight(airports, count) {
   let svgContent = svgObject.contentDocument;
 
   var airportSource = svgContent.getElementById(airports.source);
@@ -153,32 +137,41 @@ function initiateFlight(airports) {
   const { x: destinationX, y: destinationY } = airportDestination.getBoundingClientRect();
 
   //getPlaneRotation
-  let degree = getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) + degreeOfPlaneImage;
+  let degree =
+    getDegreeBetweenPoints(sourceX, sourceY, destinationX, destinationY) +
+    constants.degreeOfPlaneImage;
 
   //get flight time
   let distance = distanceBetweenPoints(sourceX, sourceY, destinationX, destinationY);
   let flightTime = calculateTime(distance, 15);
-  
+
   let isAirportInfectedOnStart = isAirportInfected(airports);
 
   //set values for planes
   let plane = document.createElement('img');
   plane.classList.add('airplane');
+  //it is important that every plane is uniquely identifiable so that every plane has its own animation
+  plane.setAttribute('id', 'airplane' + count);
 
-  plane.src = isAirportInfectedOnStart
-    ? 'assets/airplane_infected.png'
-    : 'assets/airplane.png';
-  
-  plane.style.transitionDuration = `${flightTime}s`;
+  plane.src = isAirportInfectedOnStart ? 'assets/airplane_infected.png' : 'assets/airplane.png';
+
   plane.style.left = `${sourceX}px`;
   plane.style.top = `${sourceY}px`;
   plane.style.rotate = `${degree}deg`;
   document.getElementById('virusMap').append(plane);
 
-  let flightInterval = setTimeout(() => {
-    plane.style.left = `${destinationX}px`;
-    plane.style.top = `${destinationY}px`;
-  }, 100);
+  anime({
+    targets: `#airplane${count}`,
+    left: `${destinationX}px`,
+    top: `${destinationY}px`,
+    autoplay: true,
+    easing: 'easeInOutQuad',
+    delay: 500,
+    duration: flightTime * 1000,
+    complete: function () {
+      anime.remove('.airplane line:nth-child(1)');
+    },
+  });
 
   // keep for later deletion on disable
   airplanes.push(plane);
@@ -203,11 +196,14 @@ function initiateFlight(airports) {
 }
 
 function selectRandomAirports() {
-  let maxValue = Object.keys(airportNeighbours).length;
+  let maxValue = Object.keys(constants.airportNeighbours).length;
   let randomAirportNumber = Math.floor(Math.random() * maxValue);
-  let airportName = Object.keys(airportNeighbours)[randomAirportNumber];
+  let airportName = Object.keys(constants.airportNeighbours)[randomAirportNumber];
 
-  return { source: airportName, destination: getRandomElement(airportNeighbours[airportName]) };
+  return {
+    source: airportName,
+    destination: getRandomElement(constants.airportNeighbours[airportName]),
+  };
 }
 
 function getRandomElement(arr) {
@@ -239,9 +235,9 @@ function isAirportInfected(airport) {
 }
 
 function getMatrixRowByX(x) {
-  return Math.floor(x / virusWidth);
+  return Math.floor(x / constants.virusWidth);
 }
 
 function getMatrixColoumByY(y) {
-  return Math.floor(y / (virusHeight * 0.75));
+  return Math.floor(y / (constants.virusHeight * 0.75));
 }
