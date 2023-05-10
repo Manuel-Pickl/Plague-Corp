@@ -10,13 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import anime from '../../animejs/lib/anime.es.js';
 import { getHeight, getWidth } from './helperFunctions.js';
 import { onSvgLoad } from './script.js';
-import { flightEnabled, virusMapElement } from './htmlHelper.js';
+import { flightEnabled, virusMapElement, simulationPaused } from './htmlHelper.js';
 import { virusMatrix, spreadVirus, planeSpawnInterval } from './script.js';
 import * as constants from './constants.js';
 export var svgObject = document.getElementById('svgObject');
 svgObject === null || svgObject === void 0 ? void 0 : svgObject.addEventListener('load', onSvgLoad, false);
 export var virusColumns;
 export var virusRows;
+var airplanes = [];
+var flightIntervals = [];
+var animations = [];
 export function determineSvgSize() {
     // calculate best fit for svg
     let width = getWidth();
@@ -105,6 +108,8 @@ function getDegreeBetweenPoints(x1, y1, x2, y2) {
     return (degrees + 360) % 360;
 }
 function initiateFlight(airports, count) {
+    if (simulationPaused == true)
+        return;
     let svgContent = svgObject.contentDocument;
     var airportSource = svgContent.getElementById(airports.source);
     const { x: sourceX, y: sourceY } = airportSource.getBoundingClientRect();
@@ -127,7 +132,7 @@ function initiateFlight(airports, count) {
     plane.style.top = `${sourceY}px`;
     plane.style.rotate = `${degree}deg`;
     document.getElementById('virusMap').append(plane);
-    anime({
+    var animation = anime({
         targets: `#airplane${count}`,
         left: `${destinationX}px`,
         top: `${destinationY}px`,
@@ -139,10 +144,7 @@ function initiateFlight(airports, count) {
             anime.remove('.airplane line:nth-child(1)');
         },
     });
-    // keep for later deletion on disable
-    //airplanes.push(plane);
-    //flightIntervals.push(flightInterval);
-    setTimeout(() => {
+    let flightInterval = setTimeout(() => {
         // skip infection if plane was removed before
         if (!document.body.contains(plane)) {
             return;
@@ -157,6 +159,11 @@ function initiateFlight(airports, count) {
         //remove html plane after flight is over
         plane.remove();
     }, flightTime * 1000 + 200);
+    //!!!!!!!!!!!!!!!!!!!
+    // keep for later deletion on disable
+    airplanes.push(plane);
+    flightIntervals.push(flightInterval);
+    animations.push(animation);
 }
 function selectRandomAirports() {
     let maxValue = Object.keys(constants.airportNeighbours).length;
@@ -197,5 +204,24 @@ function getMatrixRowByX(x) {
 }
 function getMatrixColoumByY(y) {
     return Math.floor(y / (constants.virusHeight * 0.75));
+}
+export function deletePlanes() {
+    airplanes.forEach(airplane => airplane.remove());
+    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+}
+export function pausePlanesAnimation() {
+    //delete intervall so that the plane stays on the map
+    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+    //pause animation of every plane
+    animations.forEach(animation => {
+        animation.pause();
+    });
+}
+export function restartPlanesAnimation() {
+    //restart animation of every plane
+    animations.forEach(animation => {
+        animation.play();
+    });
+    //TODO: Rest intervall for each plane
 }
 //# sourceMappingURL=svgHelper.js.map

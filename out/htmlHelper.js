@@ -1,6 +1,6 @@
 import anime from '../../animejs/lib/anime.es.js';
 import * as constants from './constants.js';
-import { svgObject } from './svgHelper.js';
+import { svgObject, deletePlanes, pausePlanesAnimation, restartPlanesAnimation, } from './svgHelper.js';
 import { cycleCount, virusMatrixSteps, decCycleCount, simulate, updateHud, simulationInterval, setSimulationIntervall, gameOfLifeRules, setNextStepInMatrix, } from './script.js';
 export var simulationPaused = false;
 //hud elements
@@ -65,15 +65,8 @@ function assignEnableFlightEvents() {
         if (flightEnabled) {
             return;
         }
-        /*airplanes.forEach(airplane => airplane.remove());
-        flightIntervals.forEach(flightInterval => clearInterval(flightInterval));*/
+        deletePlanes();
         anime.remove('.airplane');
-        let airplanes = document.getElementsByClassName('airplane');
-        console.log(airplanes);
-        for (let i = 0; i < airplanes.length; i++) {
-            airplanes[i].remove();
-        }
-        //plane.remove();
     };
 }
 var firstBackwardAfterPause;
@@ -84,6 +77,7 @@ function assignPauseSimulationEvents() {
         pauseSimulationElement.innerHTML = simulationPaused
             ? '<i class="fa-solid fa-play"></i>'
             : '<i class="fa-solid fa-pause"></i>';
+        pausePlanesAnimation();
     };
     backwardSimulationElement.onclick = () => {
         if (cycleCount <= 1) {
@@ -110,6 +104,7 @@ function assignPauseSimulationEvents() {
     forwardSimulationElement.onclick = () => {
         simulate();
         updateHud();
+        restartPlanesAnimation();
     };
 }
 function assignFramerateEvents() {

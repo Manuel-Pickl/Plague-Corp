@@ -1,6 +1,11 @@
 import anime from '../../animejs/lib/anime.es.js';
 import * as constants from './constants.js';
-import { svgObject } from './svgHelper.js';
+import {
+  svgObject,
+  deletePlanes,
+  pausePlanesAnimation,
+  restartPlanesAnimation,
+} from './svgHelper.js';
 import {
   cycleCount,
   virusMatrixSteps,
@@ -96,15 +101,8 @@ function assignEnableFlightEvents() {
       return;
     }
 
-    /*airplanes.forEach(airplane => airplane.remove());
-    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));*/
+    deletePlanes();
     anime.remove('.airplane');
-    let airplanes = document.getElementsByClassName('airplane');
-    console.log(airplanes);
-    for (let i = 0; i < airplanes.length; i++) {
-      airplanes[i].remove();
-    }
-    //plane.remove();
   };
 }
 
@@ -116,6 +114,7 @@ function assignPauseSimulationEvents() {
     pauseSimulationElement.innerHTML = simulationPaused
       ? '<i class="fa-solid fa-play"></i>'
       : '<i class="fa-solid fa-pause"></i>';
+    pausePlanesAnimation();
   };
 
   backwardSimulationElement.onclick = () => {
@@ -149,6 +148,7 @@ function assignPauseSimulationEvents() {
   forwardSimulationElement.onclick = () => {
     simulate();
     updateHud();
+    restartPlanesAnimation();
   };
 }
 
