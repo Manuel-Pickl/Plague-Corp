@@ -5,7 +5,9 @@ var virusMapElement;
 var framerateValueElement;
 var increaseFramerateElement;
 var decreaseFramerateElement;
+var backwardSimulationElement;
 var pauseSimulationElement;
+var forwardSimulationElement;
 var flightEnabledElement;
 var brushSymbol;
 var brushFillElement;
@@ -28,7 +30,9 @@ function assignHtmlVariables() {
     cycleCounterElement = document.querySelector(".cycleCounter span");
     infectedCountElement = document.querySelector(".infectedCount span");
     healthyCountElement = document.querySelector(".healthyCount span");
+    backwardSimulationElement = document.querySelector(".backwardSimulation");
     pauseSimulationElement = document.querySelector(".pauseSimulation");
+    forwardSimulationElement = document.querySelector(".forwardSimulation");
     framerateValueElement = document.querySelector(".framerate #framerateValue");
     decreaseFramerateElement = document.querySelector(".framerate #decreaseFramerate");
     increaseFramerateElement = document.querySelector(".framerate #increaseFramerate");
@@ -64,12 +68,40 @@ function assignEnableFlightEvents() {
         flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
     };
 }
+var firstBackwardAfterPause;
 function assignPauseSimulationEvents() {
     pauseSimulationElement.onclick = () => {
+        firstBackwardAfterPause = true;
         simulationPaused = !simulationPaused;
         pauseSimulationElement.innerHTML = simulationPaused
             ? '<i class="fa-solid fa-play"></i>'
             : '<i class="fa-solid fa-pause"></i>';
+    };
+    backwardSimulationElement.onclick = () => {
+        if (cycleCount <= 1) {
+            return;
+        }
+        if (virusMatrixSteps.length <= 1) {
+            alert("backwards limit reached!");
+            return;
+        }
+        cycleCount -= 2;
+        if (firstBackwardAfterPause) {
+            firstBackwardAfterPause = false;
+            virusMatrixSteps.pop();
+        }
+        virusMatrixSteps.pop();
+        var matrixStepBefore = virusMatrixSteps.pop();
+        // error handling?!
+        virusMatrix = matrixStepBefore.map(function (arr) {
+            return arr.slice();
+        });
+        simulate();
+        updateHud();
+    };
+    forwardSimulationElement.onclick = () => {
+        simulate();
+        updateHud();
     };
 }
 function assignFramerateEvents() {

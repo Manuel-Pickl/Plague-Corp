@@ -111,11 +111,9 @@ function placePlanes() {
         if (!flightEnabled) {
             return;
         }
-        if (Math.random() > 0.1) {
-            var Airports = selectRandomAirports();
-            initiateFlight(Airports);
-        }
-    }, 1000);
+        var Airports = selectRandomAirports();
+        initiateFlight(Airports);
+    }, planeSpawnInterval * 2000);
 }
 function getDegreeBetweenPoints(x1, y1, x2, y2) {
     const deltaX = x2 - x1;
@@ -164,7 +162,7 @@ function initiateFlight(airports) {
             let tileX = getMatrixRowByX(destinationX);
             let tileY = getMatrixColoumByY(destinationY);
             let virusTile = document.getElementById(`${tileX}-${tileY}`);
-            spreadVirus(virusTile, 4);
+            spreadVirus(virusTile, 2);
         }
         //remove html plane after flight is over
         plane.remove();
@@ -195,7 +193,6 @@ function isAirportInfected(airport) {
     const { x, y } = airportSource.getBoundingClientRect();
     let tileX = getMatrixRowByX(x);
     let tileY = getMatrixColoumByY(y);
-    let airportTile = document.getElementById(`${tileX}-${tileY}`);
     if (virusMatrix[tileX][tileY] == 1) {
         return true;
     }

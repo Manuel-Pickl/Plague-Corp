@@ -28,6 +28,7 @@ var brushSize = 1;
 var minPopulation = 1;
 var overPopulation = 7;
 var flightEnabled = true;
+var planeSpawnInterval = 1;
 var possibleVirusCount = 0;
 var infectedCount = 0;
 function onSvgLoad() {
@@ -110,6 +111,9 @@ function draw() {
     if (simulationPaused) {
         return;
     }
+    simulate();
+}
+function simulate() {
     cycleCount++;
     for (let row = 0; row < virusRows; row++) {
         for (let column = 0; column < virusColumns; column++) {
@@ -145,6 +149,8 @@ function placeVirusRandomly() {
     }
     console.log('start point set for virus');
 }
+// var virusMatrixSteps = {};
+var virusMatrixSteps = [];
 function generate() {
     infectedCount = 0;
     possibleVirusCount = 0;
@@ -164,6 +170,11 @@ function generate() {
     virusMatrix = virusMatrixNextStep.map(function (arr) {
         return arr.slice();
     });
+    // we're only holding a set number of states
+    if (virusMatrixSteps.length > backwardStepsLimit + 1) {
+        virusMatrixSteps.shift();
+    }
+    virusMatrixSteps.push(virusMatrix);
 }
 function enableVirusPlacement() {
     document.onmousedown = e => {

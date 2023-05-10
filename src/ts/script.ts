@@ -25,6 +25,7 @@ var brushSize: number = 1;
 var minPopulation: number = 1;
 var overPopulation: number = 7;
 var flightEnabled: boolean = true;
+var planeSpawnInterval: number = 1;
 
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
@@ -115,7 +116,11 @@ function draw() {
   if (simulationPaused) {
     return;
   }
-  
+
+  simulate();
+}
+
+function simulate() {
   cycleCount++;
 
   for (let row = 0; row < virusRows; row++) {
@@ -156,6 +161,8 @@ function placeVirusRandomly() {
   console.log('start point set for virus');
 }
 
+// var virusMatrixSteps = {};
+var virusMatrixSteps = [];
 function generate() {
   infectedCount = 0;
   possibleVirusCount = 0;
@@ -178,6 +185,12 @@ function generate() {
   virusMatrix = virusMatrixNextStep.map(function (arr) {
     return arr.slice();
   });
+
+  // we're only holding a set number of states
+  if (virusMatrixSteps.length > backwardStepsLimit + 1) {
+    virusMatrixSteps.shift();
+  }
+  virusMatrixSteps.push(virusMatrix);
 }
 
 function enableVirusPlacement() {
