@@ -2,17 +2,10 @@
 
 ## Ideas
 High Prio:
-* OTH Logo
 * life & death values as single checkbox values instead of range
 * safe button for screenshot (artifacts): must include map & variables (hud)
-* hud
-  * underPopulation
-  * overPopulation
-  * framerate
 * specific virus start pattern instead of single tile
-  * different brush sizes
   * meaningful patterns
-* airplane lines for infecting islands with no intial virus
 * performance optimization for
   * seaMatrix-creation
   * drawing functin
@@ -20,7 +13,6 @@ High Prio:
   * bigger brushSize
 
 Medium Prio:
-* pause and jump single frames back & forth
 * resize doesn't break ui
 * continent specific resistance
 * stat buff system for virus, e.g. virus spreading probability, dying probability
