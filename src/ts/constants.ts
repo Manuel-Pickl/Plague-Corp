@@ -1,6 +1,6 @@
 const maxHudFramerate: number = 20;
 
-const virusWidth: number = 15;
+const virusWidth: number = 10;
 const virusHeight: number = virusWidth;
 
 const spawnProbability = 0.001;

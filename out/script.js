@@ -27,8 +27,20 @@ var brushFill = true;
 var brushSize = 1;
 var minPopulation = 1;
 var overPopulation = 7;
-var flightEnabled = true;
+var flightEnabled = false;
 var planeSpawnInterval = 1;
+var gameOfLifeRules = {
+    // neighbors: state
+    // 1 neighbors : dead/0
+    // 2 neighbors : alive/1
+    0: 0,
+    1: 0,
+    2: 1,
+    3: 1,
+    4: 1,
+    5: 0,
+    6: 0
+};
 var possibleVirusCount = 0;
 var infectedCount = 0;
 function onSvgLoad() {

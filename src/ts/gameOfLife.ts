@@ -1,6 +1,6 @@
 function gameOfLife(column: number, row: number) {
   let activeNeighborCount = getActiveNeighborCount(column, row);
-  let cellIsAlive = determineLife(column, row, activeNeighborCount);
+  let cellIsAlive = determineLife(activeNeighborCount);
   virusMatrixNextStep[column][row] = cellIsAlive;
 }
 
@@ -79,9 +79,7 @@ function getNeighbors(col: number, row: number, distance: number = 1) {
  * @param {number} activeNeighborCount - The number of active neighbors
  * @returns {number} 1 if the virus tile is alive in the next cycle, 0 if otherwise
  */
-function determineLife(column: number, row: number, activeNeighborCount: number) {
-  if (activeNeighborCount < minPopulation) return 0; // Loneliness
-  else if (activeNeighborCount >= overPopulation) return 0; // Overpopulation
-  else if (activeNeighborCount >= minPopulation) return 1; // Reproduction
-  else console.log('SHOULD NEVER HAPPEN!');
+
+function determineLife(activeNeighborCount: number) {
+  return gameOfLifeRules[activeNeighborCount];
 }
