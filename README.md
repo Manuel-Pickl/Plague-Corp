@@ -2,10 +2,7 @@
 
 ## Ideas
 High Prio:
-* life & death values as single checkbox values instead of range
 * safe button for screenshot (artifacts): must include map & variables (hud)
-* specific virus start pattern instead of single tile
-  * meaningful patterns
 * performance optimization for
   * seaMatrix-creation
   * drawing functin
@@ -13,6 +10,8 @@ High Prio:
   * bigger brushSize
 
 Medium Prio:
+* specific virus start pattern instead of single tile
+  * meaningful patterns
 * resize doesn't break ui
 * continent specific resistance
 * stat buff system for virus, e.g. virus spreading probability, dying probability
