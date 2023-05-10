@@ -2,7 +2,7 @@ import anime from '../../animejs/lib/anime.es.js';
 import { getHeight, getWidth } from './helperFunctions.js';
 import { onSvgLoad } from './script.js';
 import { flightEnabled, virusMapElement } from './htmlHelper.js';
-import { virusMatrix, spreadVirus } from './script.js';
+import { virusMatrix, spreadVirus, planeSpawnInterval } from './script.js';
 import * as constants from './constants.js';
 
 export var svgObject: any = document.getElementById('svgObject');
@@ -174,8 +174,8 @@ function initiateFlight(airports, count) {
   });
 
   // keep for later deletion on disable
-  airplanes.push(plane);
-  flightIntervals.push(flightInterval);
+  //airplanes.push(plane);
+  //flightIntervals.push(flightInterval);
 
   setTimeout(() => {
     // skip infection if plane was removed before

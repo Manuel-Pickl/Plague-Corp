@@ -1,4 +1,5 @@
-export const maxFramerate: number = 15;
+import { maxFramerate } from './htmlHelper.js';
+
 export const maxHudFramerate: number = maxFramerate;
 
 export const virusWidth: number = 7;

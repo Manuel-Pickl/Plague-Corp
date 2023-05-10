@@ -1,4 +1,4 @@
-import { virusMatrixNextStep, virusMatrix } from './script.js';
+import { virusMatrixNextStep, virusMatrix, gameOfLifeRules } from './script.js';
 import { minPopulation, overPopulation } from './htmlHelper.js';
 import { virusColumns, virusRows } from './svgHelper.js';
 

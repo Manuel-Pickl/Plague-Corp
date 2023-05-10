@@ -1,6 +1,19 @@
+import anime from '../../animejs/lib/anime.es.js';
 import * as constants from './constants.js';
 import { svgObject } from './svgHelper.js';
-import { cycleCount } from './script.js';
+import {
+  cycleCount,
+  virusMatrixSteps,
+  decCycleCount,
+  simulate,
+  updateHud,
+  simulationInterval,
+  setSimulationIntervall,
+  gameOfLifeRules,
+  setNextStepInMatrix,
+} from './script.js';
+
+export var simulationPaused: boolean = false;
 
 //hud elements
 var brushFill: boolean = true;
@@ -8,6 +21,7 @@ export var brushSize: number = 1;
 export var minPopulation: number = 1;
 export var overPopulation: number = 7;
 export var flightEnabled: boolean = true;
+export var maxFramerate: number = 15;
 
 // html elements
 var worldSvgElement: SVGElement;
@@ -65,7 +79,7 @@ export function assignHtmlVariables() {
   neighborNumberElements = document.querySelectorAll('.neighborsContainer span');
 }
 
-function assignHtmlEvents() {
+export function assignHtmlEvents() {
   assignEnableFlightEvents();
   assignPauseSimulationEvents();
   assignFramerateEvents();
@@ -82,8 +96,15 @@ function assignEnableFlightEvents() {
       return;
     }
 
-    airplanes.forEach(airplane => airplane.remove());
-    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+    /*airplanes.forEach(airplane => airplane.remove());
+    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));*/
+    anime.remove('.airplane');
+    let airplanes = document.getElementsByClassName('airplane');
+    console.log(airplanes);
+    for (let i = 0; i < airplanes.length; i++) {
+      airplanes[i].remove();
+    }
+    //plane.remove();
   };
 }
 
@@ -107,7 +128,9 @@ function assignPauseSimulationEvents() {
       return;
     }
 
-    cycleCount -= 2;
+    //changed to function because variable is import: cycleCount -= 2;
+    decCycleCount();
+    decCycleCount();
 
     if (firstBackwardAfterPause) {
       firstBackwardAfterPause = false;
@@ -117,9 +140,7 @@ function assignPauseSimulationEvents() {
     var matrixStepBefore = virusMatrixSteps.pop();
     // error handling?!
 
-    virusMatrix = matrixStepBefore.map(function (arr) {
-      return arr.slice();
-    });
+    setNextStepInMatrix();
 
     simulate();
     updateHud();
@@ -141,7 +162,7 @@ function assignFramerateEvents() {
     framerateValueElement.innerText = maxFramerate.toString();
 
     clearInterval(simulationInterval);
-    simulationInterval = setInterval(draw, 1000 / maxFramerate);
+    setSimulationIntervall();
   };
 
   increaseFramerateElement.onclick = () => {
@@ -153,7 +174,7 @@ function assignFramerateEvents() {
     framerateValueElement.innerText = maxFramerate.toString();
 
     clearInterval(simulationInterval);
-    simulationInterval = setInterval(draw, 1000 / maxFramerate);
+    setSimulationIntervall();
   };
 }
 
@@ -186,7 +207,7 @@ function assignNeighborEvents() {
   });
 }
 
-function initializeHtmlElements() {
+export function initializeHtmlElements() {
   pauseSimulationElement.innerHTML = simulationPaused
     ? '<i class="fa-solid fa-play"></i>'
     : '<i class="fa-solid fa-pause"></i>';

@@ -7,6 +7,8 @@ import {
   cycleCounterElement,
   infectedCountElement,
   healthyCountElement,
+  simulationPaused,
+  maxFramerate,
 } from './htmlHelper.js';
 
 import { determineSvgSize, createSeaMatrix, virusColumns, virusRows } from './svgHelper.js';
@@ -14,7 +16,7 @@ import { gameOfLife, getNeighbors } from './gameOfLife.js';
 import * as constants from './constants.js';
 
 // intervals
-var simulationInterval: any;
+export var simulationInterval: any;
 var hudInterval: any;
 
 // matrices
@@ -24,20 +26,13 @@ var seaMatrix: number[][];
 
 var mouseIsDown: boolean = false;
 
-var airplanes: HTMLElement[] = [];
-var flightIntervals: number[] = [];
-
-var simulationPaused: boolean = false;
+export var airplanes: HTMLElement[] = [];
+export var flightIntervals: number[] = [];
 
 // hud
-var cycleCount: number = 0;
-var brushFill: boolean = true;
-var brushSize: number = 1;
-var minPopulation: number = 1;
-var overPopulation: number = 7;
-var flightEnabled: boolean = false;
-var planeSpawnInterval: number = 1;
-var gameOfLifeRules = {
+export var cycleCount: number = 0;
+export var planeSpawnInterval: number = 1;
+export var gameOfLifeRules = {
   // neighbors: state
   // 1 neighbors : dead/0
   // 2 neighbors : alive/1
@@ -52,7 +47,6 @@ var gameOfLifeRules = {
 
 var possibleVirusCount: number = 0;
 var infectedCount: number = 0;
-export var cycleCount: number = 0;
 
 export async function onSvgLoad() {
   assignHtmlVariables();
@@ -76,7 +70,7 @@ async function initializeSimulation() {
 }
 
 function startSimluation() {
-  simulationInterval = setInterval(draw, 1000 / constants.maxFramerate);
+  setSimulationIntervall();
   hudInterval = setInterval(updateHud, 1000 / constants.maxHudFramerate);
 
   (<HTMLElement>document.querySelector('.splash-screen')).style.visibility = 'hidden';
@@ -144,7 +138,7 @@ function draw() {
   simulate();
 }
 
-function simulate() {
+export function simulate() {
   cycleCount++;
 
   for (let row = 0; row < virusRows; row++) {
@@ -185,8 +179,7 @@ function placeVirusRandomly() {
   console.log('start point set for virus');
 }
 
-// var virusMatrixSteps = {};
-var virusMatrixSteps = [];
+export var virusMatrixSteps = [];
 function generate() {
   infectedCount = 0;
   possibleVirusCount = 0;
@@ -206,12 +199,10 @@ function generate() {
     }
   }
 
-  virusMatrix = virusMatrixNextStep.map(function (arr) {
-    return arr.slice();
-  });
+  setNextStepInMatrix();
 
   // we're only holding a set number of states
-  if (virusMatrixSteps.length > backwardStepsLimit + 1) {
+  if (virusMatrixSteps.length > constants.backwardStepsLimit + 1) {
     virusMatrixSteps.shift();
   }
   virusMatrixSteps.push(virusMatrix);
@@ -239,7 +230,7 @@ function placeVirus(e: MouseEvent) {
   spreadVirus(virus, brushSize);
 }
 
-function updateHud() {
+export function updateHud() {
   cycleCounterElement.innerText = cycleCount.toString();
   infectedCountElement.innerText = infectedCount.toString();
   healthyCountElement.innerText = (possibleVirusCount - infectedCount).toString();
@@ -262,5 +253,19 @@ export function spreadVirus(virus, brush) {
 
     // we can already make the tile visible, but it's functionality/spreading only starts on next frame
     document.getElementById(`${neighbor[0]}-${neighbor[1]}`).style.opacity = '0.5';
+  });
+}
+
+export function decCycleCount() {
+  cycleCount--;
+}
+
+export function setSimulationIntervall() {
+  simulationInterval = setInterval(draw, 1000 / maxFramerate);
+}
+
+export function setNextStepInMatrix() {
+  virusMatrix = virusMatrixNextStep.map(function (arr) {
+    return arr.slice();
   });
 }

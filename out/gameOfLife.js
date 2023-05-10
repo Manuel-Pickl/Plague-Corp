@@ -1,5 +1,4 @@
-import { virusMatrixNextStep, virusMatrix } from './script.js';
-import { minPopulation, overPopulation } from './htmlHelper.js';
+import { virusMatrixNextStep, virusMatrix, gameOfLifeRules } from './script.js';
 import { virusColumns, virusRows } from './svgHelper.js';
 export function gameOfLife(column, row) {
     let activeNeighborCount = getActiveNeighborCount(column, row);
