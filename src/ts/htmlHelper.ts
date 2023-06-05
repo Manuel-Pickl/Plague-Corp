@@ -22,7 +22,7 @@ export var simulationPaused: boolean = false;
 
 //hud elements
 var brushFill: boolean = true;
-export var brushSize: number = 1;
+export var brushSize: number = 2;
 export var minPopulation: number = 1;
 export var overPopulation: number = 7;
 export var flightEnabled: boolean = true;
@@ -110,11 +110,12 @@ var firstBackwardAfterPause: boolean;
 function assignPauseSimulationEvents() {
   pauseSimulationElement.onclick = () => {
     firstBackwardAfterPause = true;
+    if (simulationPaused) restartPlanesAnimation();
+    else pausePlanesAnimation();
     simulationPaused = !simulationPaused;
     pauseSimulationElement.innerHTML = simulationPaused
       ? '<i class="fa-solid fa-play"></i>'
       : '<i class="fa-solid fa-pause"></i>';
-    pausePlanesAnimation();
   };
 
   backwardSimulationElement.onclick = () => {
@@ -148,7 +149,6 @@ function assignPauseSimulationEvents() {
   forwardSimulationElement.onclick = () => {
     simulate();
     updateHud();
-    restartPlanesAnimation();
   };
 }
 
