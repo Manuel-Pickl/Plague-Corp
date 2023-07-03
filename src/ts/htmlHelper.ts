@@ -140,7 +140,7 @@ function assignPauseSimulationEvents() {
     var matrixStepBefore = virusMatrixSteps.pop();
     // error handling?!
 
-    setNextStepInMatrix();
+    setNextStepInMatrix(matrixStepBefore);
 
     simulate();
     updateHud();

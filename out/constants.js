@@ -1,6 +1,6 @@
 import { maxFramerate } from './htmlHelper.js';
 export const maxHudFramerate = maxFramerate;
-export const virusWidth = 7;
+export const virusWidth = 12;
 export const virusHeight = virusWidth;
 export const spawnProbability = 0.001;
 export const brushSizeMin = 1;

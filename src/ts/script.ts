@@ -199,7 +199,7 @@ function generate() {
     }
   }
 
-  setNextStepInMatrix();
+  setNextStepInMatrix(virusMatrixNextStep);
 
   // we're only holding a set number of states
   if (virusMatrixSteps.length > constants.backwardStepsLimit + 1) {
@@ -264,8 +264,8 @@ export function setSimulationIntervall() {
   simulationInterval = setInterval(draw, 1000 / maxFramerate);
 }
 
-export function setNextStepInMatrix() {
-  virusMatrix = virusMatrixNextStep.map(function (arr) {
+export function setNextStepInMatrix(matrix) {
+  virusMatrix = matrix.map(function (arr) {
     return arr.slice();
   });
 }

@@ -19,6 +19,7 @@ export var virusColumns;
 export var virusRows;
 var airplanes = [];
 var flightIntervals = [];
+var flightTimes = [];
 var animations = [];
 export function determineSvgSize() {
     // calculate best fit for svg
@@ -142,27 +143,18 @@ function initiateFlight(airports, count) {
         duration: flightTime * 1000,
         complete: function () {
             anime.remove('.airplane line:nth-child(1)');
+            //spread virus on flight destination
+            if (isAirportInfectedOnStart) {
+                let tileX = getMatrixRowByX(destinationX);
+                let tileY = getMatrixColoumByY(destinationY);
+                let virusTile = document.getElementById(`${tileX}-${tileY}`);
+                spreadVirus(virusTile, 2);
+            }
+            //remove html plane after flight is over
+            plane.remove();
         },
     });
-    let flightInterval = setTimeout(() => {
-        // skip infection if plane was removed before
-        if (!document.body.contains(plane)) {
-            return;
-        }
-        //spread virus on flight destination
-        if (isAirportInfectedOnStart) {
-            let tileX = getMatrixRowByX(destinationX);
-            let tileY = getMatrixColoumByY(destinationY);
-            let virusTile = document.getElementById(`${tileX}-${tileY}`);
-            spreadVirus(virusTile, 2);
-        }
-        //remove html plane after flight is over
-        plane.remove();
-    }, flightTime * 1000 + 200);
-    //!!!!!!!!!!!!!!!!!!!
     // keep for later deletion on disable
-    airplanes.push(plane);
-    flightIntervals.push(flightInterval);
     animations.push(animation);
 }
 function selectRandomAirports() {
@@ -207,11 +199,12 @@ function getMatrixColoumByY(y) {
 }
 export function deletePlanes() {
     airplanes.forEach(airplane => airplane.remove());
-    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+    flightIntervals.forEach(flightInterval => clearTimeout(flightInterval));
 }
 export function pausePlanesAnimation() {
     //delete intervall so that the plane stays on the map
-    flightIntervals.forEach(flightInterval => clearInterval(flightInterval));
+    flightIntervals.forEach(flightInterval => clearTimeout(flightInterval));
+    //airplanes.forEach(plane => plane.remove());
     //pause animation of every plane
     animations.forEach(animation => {
         animation.pause();
@@ -222,6 +215,5 @@ export function restartPlanesAnimation() {
     animations.forEach(animation => {
         animation.play();
     });
-    //TODO: Rest intervall for each plane
 }
 //# sourceMappingURL=svgHelper.js.map

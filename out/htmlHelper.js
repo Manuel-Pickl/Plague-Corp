@@ -5,7 +5,7 @@ import { cycleCount, virusMatrixSteps, decCycleCount, simulate, updateHud, simul
 export var simulationPaused = false;
 //hud elements
 var brushFill = true;
-export var brushSize = 1;
+export var brushSize = 2;
 export var minPopulation = 1;
 export var overPopulation = 7;
 export var flightEnabled = true;
@@ -73,11 +73,14 @@ var firstBackwardAfterPause;
 function assignPauseSimulationEvents() {
     pauseSimulationElement.onclick = () => {
         firstBackwardAfterPause = true;
+        if (simulationPaused)
+            restartPlanesAnimation();
+        else
+            pausePlanesAnimation();
         simulationPaused = !simulationPaused;
         pauseSimulationElement.innerHTML = simulationPaused
             ? '<i class="fa-solid fa-play"></i>'
             : '<i class="fa-solid fa-pause"></i>';
-        pausePlanesAnimation();
     };
     backwardSimulationElement.onclick = () => {
         if (cycleCount <= 1) {
@@ -97,14 +100,13 @@ function assignPauseSimulationEvents() {
         virusMatrixSteps.pop();
         var matrixStepBefore = virusMatrixSteps.pop();
         // error handling?!
-        setNextStepInMatrix();
+        setNextStepInMatrix(matrixStepBefore);
         simulate();
         updateHud();
     };
     forwardSimulationElement.onclick = () => {
         simulate();
         updateHud();
-        restartPlanesAnimation();
     };
 }
 function assignFramerateEvents() {
