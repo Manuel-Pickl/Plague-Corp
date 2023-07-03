@@ -18,8 +18,6 @@ svgObject === null || svgObject === void 0 ? void 0 : svgObject.addEventListener
 export var virusColumns;
 export var virusRows;
 var airplanes = [];
-var flightIntervals = [];
-var flightTimes = [];
 var animations = [];
 export function determineSvgSize() {
     // calculate best fit for svg
@@ -156,6 +154,7 @@ function initiateFlight(airports, count) {
     });
     // keep for later deletion on disable
     animations.push(animation);
+    airplanes.push(plane);
 }
 function selectRandomAirports() {
     let maxValue = Object.keys(constants.airportNeighbours).length;
@@ -199,12 +198,8 @@ function getMatrixColoumByY(y) {
 }
 export function deletePlanes() {
     airplanes.forEach(airplane => airplane.remove());
-    flightIntervals.forEach(flightInterval => clearTimeout(flightInterval));
 }
 export function pausePlanesAnimation() {
-    //delete intervall so that the plane stays on the map
-    flightIntervals.forEach(flightInterval => clearTimeout(flightInterval));
-    //airplanes.forEach(plane => plane.remove());
     //pause animation of every plane
     animations.forEach(animation => {
         animation.pause();
