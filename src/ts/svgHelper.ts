@@ -6,7 +6,14 @@ import { virusMatrix, spreadVirus, planeSpawnInterval } from './script.js';
 import * as constants from './constants.js';
 
 export var svgObject: any = document.getElementById('svgObject');
-svgObject?.addEventListener('load', onSvgLoad, false);
+
+// Append a unique timestamp as a query parameter to the SVG file's URL to force a new load (bypass caching)
+var uniqueTimestamp = Date.now();
+svgObject.data = 'assets/world.svg?' + uniqueTimestamp;
+
+// start everything on loading the svg
+svgObject.addEventListener('load', onSvgLoad, false);
+
 
 export var virusColumns: number;
 export var virusRows: number;
