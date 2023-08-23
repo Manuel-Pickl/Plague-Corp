@@ -8,7 +8,7 @@ var brushFill = true;
 export var brushSize = 2;
 export var minPopulation = 1;
 export var overPopulation = 7;
-export var flightEnabled = true;
+export var flightEnabled = false;
 export var maxFramerate = 15;
 // html elements
 var worldSvgElement;

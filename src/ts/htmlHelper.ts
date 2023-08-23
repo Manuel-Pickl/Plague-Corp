@@ -25,7 +25,7 @@ var brushFill: boolean = true;
 export var brushSize: number = 2;
 export var minPopulation: number = 1;
 export var overPopulation: number = 7;
-export var flightEnabled: boolean = true;
+export var flightEnabled: boolean = false;
 export var maxFramerate: number = 15;
 
 // html elements
