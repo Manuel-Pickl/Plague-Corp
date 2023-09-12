@@ -1,13 +1,8 @@
-# Plague-Inc
+# Plague-Corp
 
 ## Ideas
 High Prio:
 * safe button for screenshot (artifacts): must include map & variables (hud)
-* performance optimization for
-  * seaMatrix-creation
-  * drawing functin
-  * generation algorithm
-  * bigger brushSize
 
 Medium Prio:
 * specific virus start pattern instead of single tile
